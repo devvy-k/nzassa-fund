@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "627145658642",
+    "project_id": "nzassa-fund",
+    "storage_bucket": "nzassa-fund.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627145658642:android:332fef05c4d8d38befa3cb",
+        "android_client_info": {
+          "package_name": "com.example.crowfunding_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6Au8DPsirWSEQIunlbihPNdMzR2cekBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
