@@ -1,30 +1,30 @@
 import 'dart:developer' as console;
 
-import 'package:crowfunding_project/data/models/post_model.dart';
-import 'package:crowfunding_project/domain/usecases/posts/get_posts_usecase.dart';
+import 'package:crowfunding_project/data/models/project_model.dart';
+import 'package:crowfunding_project/domain/usecases/projects/get_projects_usecase.dart';
 import 'package:get/get.dart';
 
 class HomeViewmodel extends GetxController {
-  final GetPostsUsecase getPostsUsecase;
-  HomeViewmodel(this.getPostsUsecase);
+  final GetProjectsUsecase getProjectsUsecase;
+  HomeViewmodel(this.getProjectsUsecase);
 
-  // Reactive post data
-  final RxList<PostModel> posts = <PostModel>[].obs;
+  // Reactive projects data
+  final RxList<ProjectModel> projects = <ProjectModel>[].obs;
   final RxBool isLoading = true.obs;
 
   @override
   void onInit() {
     console.log('[HomeViewModel] onInit');
-    fetchPosts();
+    fetchProjects();
     super.onInit();
   }
 
-  void fetchPosts() async {
+  void fetchProjects() async {
     isLoading.value = true;
-    getPostsUsecase
+    getProjectsUsecase
         .call()
-        .then((fetchedPosts) {
-          posts.assignAll(fetchedPosts);
+        .then((fetchedProjects) {
+          projects.assignAll(fetchedProjects);
           isLoading.value = false;
         })
         .catchError((error) {

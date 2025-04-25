@@ -1,6 +1,6 @@
 import 'package:crowfunding_project/domain/entities/author.dart';
 
-class Post {
+class Project {
   final String id;
   final String? content;
   final String? summary;
@@ -10,7 +10,7 @@ class Post {
   final List<String>? likes;
   final List<String>? comments;
 
-  const Post({
+  const Project({
     required this.id,
     required this.content,
     required this.summary,

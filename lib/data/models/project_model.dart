@@ -1,11 +1,10 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crowfunding_project/domain/entities/author.dart';
-import 'package:crowfunding_project/domain/entities/post.dart';
+import 'package:crowfunding_project/domain/entities/project.dart';
 import 'package:flutter/foundation.dart';
 
-class PostModel extends Post {
-  PostModel({
+class ProjectModel extends Project {
+  ProjectModel({
     required super.id,
     required super.content,
     required super.summary,
@@ -16,7 +15,11 @@ class PostModel extends Post {
     required super.comments,
   });
 
-  factory PostModel.fromJson(String id, Map<String, dynamic> json, Author author) {
+  factory ProjectModel.fromJson(
+    String id,
+    Map<String, dynamic> json,
+    Author author,
+  ) {
     // Parse date
     DateTime createdAt;
     final dynamic rawDate = json['createdAt'];
@@ -32,7 +35,7 @@ class PostModel extends Post {
       createdAt = DateTime.now(); // fallback si vide
     }
 
-    return PostModel(
+    return ProjectModel(
       id: id.isNotEmpty ? id : UniqueKey().toString(),
       content: json['content'] ?? '',
       summary: json['summary'] ?? '',
@@ -57,4 +60,3 @@ class PostModel extends Post {
     };
   }
 }
-
