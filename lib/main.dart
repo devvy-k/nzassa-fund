@@ -11,11 +11,9 @@ void main() async {
     GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: "N'Zassa Fund",
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      initialRoute: '/home',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      initialRoute: '/',
       getPages: AppRoutes.routes,
-    )
+    ),
   );
 }

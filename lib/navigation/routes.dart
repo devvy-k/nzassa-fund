@@ -1,9 +1,9 @@
-import 'package:crowfunding_project/di/projects_bindings.dart';
-import 'package:crowfunding_project/ui/features/home/home_page.dart';
+import 'package:crowfunding_project/core/di/projects_bindings.dart';
+import 'package:crowfunding_project/navigation/base_screen.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
   static final routes = [
-    GetPage(name: '/home', page: () => HomePage(), binding: ProjectsBindings()),
+    GetPage(name: '/', page: () => BaseScreen(), binding: ProjectsBindings()),
   ];
 }
