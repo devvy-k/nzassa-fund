@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
 import 'package:crowfunding_project/ui/features/projects/component/profile_avatar.dart';
-import 'package:crowfunding_project/utils/bottom_sheet_helper.dart';
+import 'package:crowfunding_project/utils/payment_bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
-import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class ProjectContainer extends StatelessWidget {
   final Project project;
@@ -41,6 +42,11 @@ class ProjectContainer extends StatelessWidget {
                   'https://images.pexels.com/photos/12199063/pexels-photo-12199063.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: _ProjectBudget(project: project),
+          ),
+          const SizedBox(height: 8.0),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: _ProjectStats(project: project),
@@ -114,7 +120,7 @@ class _ProjectStats extends StatelessWidget {
                 size: 16.0,
               ),
               onTap: () {
-                BottomSheetHelper.showCustomBottomSheet(context: context);
+                PaymentBottomSheet.show(context);
               },
             ),
             _ProjectButton(
@@ -179,12 +185,125 @@ class _ProjectButton extends StatelessWidget {
   }
 }
 
-class _ProjectBudget extends StatelessWidget {
+class _ProjectBudget extends StatefulWidget {
   final Project project;
   const _ProjectBudget({required this.project});
 
   @override
+  State<_ProjectBudget> createState() => _ProjectBudgetState();
+}
+
+class _ProjectBudgetState extends State<_ProjectBudget> {
+  double collected = 1850600;
+  double target = 2000000;
+  bool showTooltip = false;
+
+  Timer? _timer;
+
+  void _onTapBar() {
+    setState(() {
+      showTooltip = true;
+    });
+
+    _timer?.cancel();
+    _timer = Timer(const Duration(seconds: 2), () {
+      setState(() {
+        showTooltip = false;
+      });
+    });
+  }
+
+  String formatAmount(double amount) {
+    return NumberFormat("#,##0", "fr_FR").format(amount) + ' FCFA';
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final progress = (collected / target).clamp(0.0, 1.0);
+    final percentage = (progress * 100).toStringAsFixed(1);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final barWidth = constraints.maxWidth;
+        final tooltipX = (progress * barWidth).clamp(0.0, barWidth - 90);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            GestureDetector(
+              onTap: _onTapBar,
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: 20,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.orange.shade100,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.transparent,
+                        color: Colors.orange,
+                        minHeight: 20,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '$percentage%',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  if (showTooltip)
+                    Positioned(
+                      left: tooltipX,
+                      top: -35,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            formatAmount(collected),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 40),
+                Text(
+                  '🎯 ${formatAmount(target)}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
   }
 }
