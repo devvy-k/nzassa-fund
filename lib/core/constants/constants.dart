@@ -1,4 +1,3 @@
-import 'package:crowfunding_project/ui/features/home_page.dart';
 import 'package:crowfunding_project/ui/features/projects/projects_screen.dart';
 import 'package:flutter/material.dart';
 

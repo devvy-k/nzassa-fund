@@ -12,19 +12,18 @@ class BaseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: 
-      Obx(
+      body: Obx(
         () => IndexedStack(
-        index: BaseController.to.currentIndex.value,
-        children: [
-          HomeNav(),
-          CollectCreationNav(),
-          SearchNav(),
-        ],
-      ),
-      ),
-
+          index: BaseController.to.currentIndex.value,
+          children: [
+            HomeNav(),
+            CollectCreationNav(),
+            SearchNav(),
+          ],
+        )
+        ),
       bottomNavigationBar: BottomNavBar(),
     );
   }
 }
+

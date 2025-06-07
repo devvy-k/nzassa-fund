@@ -1,5 +1,4 @@
 import 'package:crowfunding_project/core/constants/nav_ids.dart';
-import 'package:crowfunding_project/core/di/projects_bindings.dart';
 import 'package:crowfunding_project/ui/features/home_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -12,9 +11,9 @@ class HomeNav extends StatelessWidget {
     return Navigator(
       key: Get.nestedKey(NavIds.home),
       onGenerateRoute: (settings) {
-        if (settings.name != '/home') {
+        if (settings.name == '/home' || settings.name == null || settings.name == '/') {
           return GetPageRoute(
-            settings: settings,
+            routeName: '/home',
             page: () => HomePage(),
           );
         }

@@ -1,17 +1,65 @@
+import 'dart:developer' as console;
 import 'dart:io';
-
+import 'package:crowfunding_project/core/constants/nav_ids.dart';
+import 'package:crowfunding_project/core/constants/project_categories.dart';
+import 'package:crowfunding_project/core/domain/entities/author.dart';
+import 'package:crowfunding_project/core/domain/entities/project.dart';
+import 'package:crowfunding_project/ui/features/collect_creation/collect_creation_viewmodel.dart';
+import 'package:crowfunding_project/utils/custom_textformfield.dart';
+import 'package:crowfunding_project/utils/receipt_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 
-class CollectCreationPage extends StatelessWidget {
+class CollectCreationPage extends StatefulWidget {
   const CollectCreationPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController titleController = TextEditingController();
-    final TextEditingController descriptionController = TextEditingController();
-    final TextEditingController amountController = TextEditingController();
+  State<CollectCreationPage> createState() => _CollectCreationPageState();
+}
 
+class _CollectCreationPageState extends State<CollectCreationPage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
+  ProjectCategories? selectedCategory;
+
+  bool _isLoading = false;
+  Project? project;
+
+  void _submitForm() {
+     project = Project(
+      id: UniqueKey().toString(), // generate a unique id
+      content: descriptionController.text,
+      author: Author(
+        id: "", // replace with actual author id
+        name: "Author Name",
+        profilePicture: "",
+      ), // must be replaced with actual author data
+      images: [], // replace with actual images
+      createdAt: DateTime.now(),
+      totalCollected: 0,
+      collectGoal: int.tryParse(amountController.text) ?? 0,
+      likes: 0,
+      comments: [],
+      category: selectedCategory!.name,
+      tags: [], // replace with selected tags
+      receipts: [],
+    );
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    amountController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
@@ -30,90 +78,146 @@ class CollectCreationPage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            /// Nom du projet
-            _buildLabelWithInfo('Nom du projet'),
-            const SizedBox(height: 6),
-            _buildInputField('Nom de votre projet', titleController),
-
-            const SizedBox(height: 16),
-
-            /// Description
-            _buildLabelWithInfo('Description'),
-            const SizedBox(height: 6),
-            _buildInputField(
-              'Décrivez votre projet',
-              descriptionController,
-              maxLines: 4,
-            ),
-
-            const SizedBox(height: 16),
-
-            /// Photos
-            _buildLabelWithInfo('Médias'),
-            const SizedBox(height: 6),
-            _CollectMediaPicker(),
-
-            const SizedBox(height: 16),
-
-            /// Montant de la collecte
-            const Text(
-              'Montant de la collecte',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildInputField(
-                    'Entrez le montant de votre collecte',
-                    amountController,
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Nom du projet
+                  _buildLabelWithInfo('Nom du projet'),
+                  const SizedBox(height: 6),
+                  CustomTextformfield(
+                    hint: 'Entrez le nom de votre projet',
+                    controller: titleController,
+                    contentRequired: true,
+                    keyBoardType: 'text',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Ce champ est réquis';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'FCFA',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            /// Justificatifs
-            _buildLabelWithInfo('Justificatifs'),
-            const SizedBox(height: 6),
-            _buildPdfPicker(),
-
-            const SizedBox(height: 16),
-
-            /// Catégorie & Tags
-            Row(
-              children: [
-                Expanded(child: _buildDropdownPlaceholder('Catégorie')),
-                const SizedBox(width: 12),
-                Expanded(child: _buildTagPlaceholder('Tags')),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            /// Boutons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                OutlinedButton(onPressed: () {}, child: const Text('Annuler')),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+              
+                  const SizedBox(height: 16),
+              
+                  /// Description
+                  _buildLabelWithInfo('Description'),
+                  const SizedBox(height: 6),
+                  CustomTextformfield(
+                    hint: 'Entrez une description de votre projet',
+                    controller: descriptionController,
+                    contentRequired: true,
+                    keyBoardType: 'text',
+                    maxLines: 5,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Ce champ est réquis';
+                      }
+                      return null;
+                    },
                   ),
-                  child: const Text('Soumettre'),
-                ),
-              ],
+              
+                  const SizedBox(height: 16),
+              
+                  /// Photos
+                  _buildLabelWithInfo('Médias'),
+                  const SizedBox(height: 6),
+                  _CollectMediaPicker(),
+              
+                  const SizedBox(height: 16),
+              
+                  /// Montant de la collecte
+                  const Text(
+                    'Montant de la collecte',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomTextformfield(
+                          hint: 'Entrez le montant',
+                          controller: amountController,
+                          contentRequired: true,
+                          keyBoardType: 'number',
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Ce champ est réquis';
+                            }
+                            final amount = int.tryParse(value);
+                            if (amount == null || amount <= 0) {
+                              return 'Veuillez entrer un montant valide';
+                            }
+                            return null;
+                          },
+                        )
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'FCFA',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+              
+                  const SizedBox(height: 16),
+              
+                  /// Justificatifs
+                  _buildLabelWithInfo('Justificatifs'),
+                  const SizedBox(height: 6),
+                  ReceiptPicker(),
+              
+                  const SizedBox(height: 16),
+              
+                  /// Catégorie & Tags
+                  Row(
+                    children: [
+                      Expanded(child: _buildCategoriesDropdown('Catégorie')),
+                      const SizedBox(width: 12),
+                      Expanded(child: _buildTagPlaceholder('Tags')),
+                    ],
+                  ),
+              
+                  const SizedBox(height: 24),
+              
+                  /// Boutons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () {},
+                        child: const Text('Annuler'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate() &&
+                              selectedCategory != null) {
+                            _submitForm();
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            Future.delayed(const Duration(seconds: 3), () {
+                              setState(() {
+                                _isLoading = false;
+                              });
+                              Get.toNamed('/collect-preview', arguments: project, id: NavIds.collectCreation);
+                            });
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
+                        child: const Text('Prévisualiser'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
+            if (_isLoading) const Center(child: CircularProgressIndicator()),
           ],
         ),
       ),
@@ -130,83 +234,31 @@ class CollectCreationPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInputField(
-    String hint,
-    TextEditingController controller, {
-    int maxLines = 1,
-  }) {
-    return TextField(
-      controller: controller,
-      maxLines: maxLines,
+  Widget _buildCategoriesDropdown(String label) {
+    return DropdownButtonFormField<ProjectCategories>(
       decoration: InputDecoration(
-        hintText: hint,
         border: const OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 10,
-        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       ),
-    );
-  }
-
-  Widget _buildMediaPicker() {
-    return Container(
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.add_photo_alternate_outlined, size: 40),
-            SizedBox(height: 8),
-            Text(
-              'JPG / PNG / MP4',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPdfPicker() {
-    return Row(
-      children: [
-        Container(
-          height: 80,
-          width: 80,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Icon(Icons.picture_as_pdf, size: 40),
-        ),
-        const SizedBox(width: 12),
-        const Text('PDF', style: TextStyle(fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
-  Widget _buildDropdownPlaceholder(String label) {
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Text(label),
-            const Spacer(),
-            const Icon(Icons.arrow_drop_down),
-          ],
-        ),
-      ),
+      value: selectedCategory,
+      hint: const Text('Catégorie'),
+      items: ProjectCategories.values.map((category) {
+        return DropdownMenuItem<ProjectCategories>(
+          value: category,
+          child: Text(category.label),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          selectedCategory = value;
+        });
+      },
+      validator: (value) {
+        if (value == null) {
+          return 'Sélectionnez une catégorie';
+        }
+        return null;
+      },
     );
   }
 
@@ -228,14 +280,24 @@ class CollectCreationPage extends StatelessWidget {
 }
 
 class _CollectMediaPicker extends StatefulWidget {
-  const _CollectMediaPicker({super.key});
+  const _CollectMediaPicker();
 
   @override
   State<_CollectMediaPicker> createState() => __CollectMediaPickerState();
 }
 
 class __CollectMediaPickerState extends State<_CollectMediaPicker> {
-  final List<File> _mediaFiles = [];
+  final CollectCreationViewmodel collectCreationViewmodel =
+      Get.find<CollectCreationViewmodel>();
+  final Map<String, VideoPlayerController> _videoControllers = {};
+
+  @override
+  void dispose() {
+    for (var controller in _videoControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   Future<void> _pickMedia() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -245,19 +307,40 @@ class __CollectMediaPickerState extends State<_CollectMediaPicker> {
     );
 
     if (result != null) {
-      setState(() {
-        _mediaFiles.addAll(
-          result.files
-              .where((file) => file.path != null)
-              .map((file) => File(file.path!)),
-        );
-      });
+      for (var file in result.files) {
+        if (file.path != null) {
+          final newFile = File(file.path!);
+          collectCreationViewmodel.mediaFiles.add(newFile);
+
+          if (newFile.path.toLowerCase().endsWith('.mp4')) {
+            try {
+              final controller = VideoPlayerController.file(newFile);
+              await controller.initialize();
+              controller.setLooping(false);
+              controller.setVolume(0.7);
+              _videoControllers[newFile.path] = controller;
+            } catch (e) {
+              // Optionally show a snackbar or log the error
+              console.log('Error initializing video player: $e');
+            }
+          }
+        }
+      }
+      setState(() {});
     }
   }
 
   void _removeMedia(int index) {
+    final file = collectCreationViewmodel.mediaFiles[index];
+    final path = file.path;
+
+    if (_videoControllers.containsKey(path)) {
+      _videoControllers[path]?.dispose();
+      _videoControllers.remove(path);
+    }
+
     setState(() {
-      _mediaFiles.removeAt(index);
+      collectCreationViewmodel.mediaFiles.removeAt(index);
     });
   }
 
@@ -289,15 +372,15 @@ class __CollectMediaPickerState extends State<_CollectMediaPicker> {
           ),
         ),
         const SizedBox(height: 12),
-        if (_mediaFiles.isNotEmpty)
+        if (collectCreationViewmodel.mediaFiles.isNotEmpty)
           SizedBox(
             height: 100,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: _mediaFiles.length,
+              itemCount: collectCreationViewmodel.mediaFiles.length,
               separatorBuilder: (_, __) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
-                final file = _mediaFiles[index];
+                final file = collectCreationViewmodel.mediaFiles[index];
                 final isVideo = file.path.toLowerCase().endsWith('.mp4');
 
                 return Stack(
@@ -306,12 +389,48 @@ class __CollectMediaPickerState extends State<_CollectMediaPicker> {
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
                         width: 100,
+                        height: 100,
                         color: Colors.grey.shade300,
                         child:
                             isVideo
-                                ? const Center(
-                                  child: Icon(Icons.videocam, size: 40),
-                                )
+                                ? _videoControllers[file.path] != null
+                                    ? GestureDetector(
+                                      onTap: () {
+                                        final controller =
+                                            _videoControllers[file.path]!;
+                                        if (controller.value.isPlaying) {
+                                          controller.pause();
+                                        } else {
+                                          controller.play();
+                                        }
+                                        setState(() {});
+                                      },
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          AspectRatio(
+                                            aspectRatio:
+                                                _videoControllers[file.path]!
+                                                    .value
+                                                    .aspectRatio,
+                                            child: VideoPlayer(
+                                              _videoControllers[file.path]!,
+                                            ),
+                                          ),
+                                          if (!_videoControllers[file.path]!
+                                              .value
+                                              .isPlaying)
+                                            const Icon(
+                                              Icons.play_circle_fill,
+                                              size: 50,
+                                              color: Colors.white,
+                                            ),
+                                        ],
+                                      ),
+                                    )
+                                    : const Center(
+                                      child: CircularProgressIndicator(),
+                                    )
                                 : Image.file(file, fit: BoxFit.cover),
                       ),
                     ),

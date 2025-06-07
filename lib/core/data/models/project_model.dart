@@ -7,12 +7,16 @@ class ProjectModel extends Project {
   ProjectModel({
     required super.id,
     required super.content,
-    required super.summary,
     required super.author,
     required super.images,
     required super.createdAt,
+    required super.totalCollected,
+    required super.collectGoal,
     required super.likes,
     required super.comments,
+    required super.category,
+    required super.tags,
+    required super.receipts,
   });
 
   factory ProjectModel.fromJson(
@@ -38,12 +42,16 @@ class ProjectModel extends Project {
     return ProjectModel(
       id: id.isNotEmpty ? id : UniqueKey().toString(),
       content: json['content'] ?? '',
-      summary: json['summary'] ?? '',
       author: author,
       images: List<String>.from(json['images'] ?? []),
       createdAt: createdAt,
-      likes: List<String>.from(json['likes'] ?? []),
+      likes: json['likes'] ?? 0,
+      totalCollected: json['totalCollected'] ?? 0,
+      collectGoal: json['collectGoal'] ?? 0,
       comments: List<String>.from(json['comments'] ?? []),
+      category: json['category'] ?? '',
+      tags: List<String>.from(json['tags'] ?? []),
+      receipts: List<String>.from(json['receipts'] ?? []),
     );
   }
 
@@ -51,12 +59,16 @@ class ProjectModel extends Project {
     return {
       'id': id,
       'content': content,
-      'summary': summary,
       'author': author.id,
       'images': images,
       'createdAt': createdAt.toIso8601String(),
+      'totalCollected': totalCollected,
+      'collectGoal': collectGoal,
       'likes': likes,
       'comments': comments,
+      'category': category,
+      'tags': tags,
+      'receipts': receipts,
     };
   }
 }

@@ -43,6 +43,9 @@ dependencies:
   image_picker: ^1.1.2
   file_picker: ^10.1.9
   permission_handler: ^12.0.0+1
+  video_player: ^2.9.5
+  firebase_auth: ^5.5.4
+  http: ^1.4.0
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +57,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  build_runner: ^2.4.15
+  mockito: ^5.4.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -72,8 +77,16 @@ flutter:
     - assets/logos/logo-mtn-money.png
     - assets/logos/logo-om.jpeg
     - assets/logos/logo-wave.jpeg
+    - assets/logos/logo_facebook.png
+    - assets/logos/logo_google.png
+    - assets/logos/logo_insta.png
+    - assets/logos/logo_x.png
+    - assets/logos/logo_nzassa_fund.png
     - assets/rive/check.riv
     - assets/rive/confetti(1).riv
+    - assets/images/sign_in_image.jpg
+    - assets/images/bg_sign_in.jpg
+    - assets/images/bg_sign_up.jpg
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

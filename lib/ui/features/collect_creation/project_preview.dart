@@ -1,60 +1,77 @@
 import 'dart:async';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
+import 'package:crowfunding_project/ui/features/collect_creation/collect_creation_viewmodel.dart';
 import 'package:crowfunding_project/ui/features/projects/component/profile_avatar.dart';
-import 'package:crowfunding_project/utils/payment_bottom_sheet.dart';
+import 'package:crowfunding_project/utils/image_pager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class ProjectContainer extends StatelessWidget {
+class ProjectPreview extends StatelessWidget {
   final Project project;
-  const ProjectContainer({super.key, required this.project});
+  const ProjectPreview({super.key, required this.project});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5.0),
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      color: Colors.white,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _ProjectHeader(project: project),
-                const SizedBox(height: 4.0),
-                Text(
-                  project.content != null
-                      ? project.content!
-                      : 'No content available',
-                ),
-                SizedBox(height: 6.0),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: CachedNetworkImage(
-              imageUrl:
-                  'https://images.pexels.com/photos/12199063/pexels-photo-12199063.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: _ProjectBudget(project: project),
-          ),
-          const SizedBox(height: 8.0),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: _ProjectStats(project: project),
-          ),
-        ],
+    final CollectCreationViewmodel collectCreationViewmodel = Get.find<CollectCreationViewmodel>();
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_outlined),
+          onPressed: () {
+        Navigator.of(context).pop();
+          },
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 5.0),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _ProjectHeader(project: project),
+                        const SizedBox(height: 4.0),
+                        Text(
+                          project.content != null
+                              ? project.content!
+                              : 'No content available',
+                        ),
+                        SizedBox(height: 6.0),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ImagePager(
+                      images: collectCreationViewmodel.mediaFiles,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: _ProjectBudget(project: project),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: _ProjectStats(project: project),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
+    
+
   }
 }
 
@@ -95,7 +112,7 @@ class _ProjectHeader extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: () => print('More options'),
+          onPressed: () {},
           icon: const Icon(Icons.more_horiz, color: Colors.grey),
         ),
       ],
@@ -121,10 +138,6 @@ class _ProjectStats extends StatelessWidget {
                 size: 16.0,
               ),
               onTap: () {
-                //PaymentBottomSheet.show(context);
-                Get.toNamed('/signin', arguments: {
-                  'projectId': project.id,
-                });
               },
             ),
             _ProjectButton(
@@ -133,7 +146,7 @@ class _ProjectStats extends StatelessWidget {
                 color: Colors.grey[600],
                 size: 16.0,
               ),
-              onTap: () => print('Like'),
+              onTap: () {},
             ),
             _ProjectButton(
               icon: Icon(
@@ -141,11 +154,11 @@ class _ProjectStats extends StatelessWidget {
                 color: Colors.grey[600],
                 size: 16.0,
               ),
-              onTap: () => print('Comment'),
+              onTap: () {},
             ),
             _ProjectButton(
               icon: Icon(Icons.send, color: Colors.grey[600], size: 16.0),
-              onTap: () => print('send'),
+              onTap: () {}
             ),
           ],
         ),
@@ -198,8 +211,15 @@ class _ProjectBudget extends StatefulWidget {
 }
 
 class _ProjectBudgetState extends State<_ProjectBudget> {
-  double collected = 1850600;
-  double target = 2000000;
+  double collected = 0.0;
+  double target = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    collected = widget.project.totalCollected?.toDouble() ?? 0.0;
+    target = widget.project.collectGoal.toDouble();
+  }
   bool showTooltip = false;
 
   Timer? _timer;

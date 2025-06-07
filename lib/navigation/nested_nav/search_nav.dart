@@ -11,9 +11,9 @@ class SearchNav extends StatelessWidget {
     return Navigator(
       key: Get.nestedKey(NavIds.search),
       onGenerateRoute: (settings) {
-        if (settings.name != '/search') {
+        if (settings.name == '/search' || settings.name == null || settings.name == '/') {
           return GetPageRoute(
-            settings: settings,
+            routeName: '/search',
             page: () => const SearchPage(),
           );
         }
