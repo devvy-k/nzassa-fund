@@ -8,9 +8,17 @@ class ProjectsRemoteDatasource {
 
   ProjectsRemoteDatasource(this.firestoreService);
 
-  Future<List<ProjectModel>> getProjects() async {
-    final projects = await firestoreService.getPosts();
-    console.log('[RemoteDatasource] Projects length : ${projects.length}');
-    return projects;
+  Stream<List<ProjectModel>> getProjects() {
+    return firestoreService.streamProjects();
+  }
+
+  Future<void> createProject(ProjectModel project) async {
+    // Add media after creation later
+    try {
+      await firestoreService.createProject(project);
+    } catch (e) {
+      console.log('[ProjectsRemoteDatasource] Error creating project: $e');
+      rethrow;
+    }
   }
 }

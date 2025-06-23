@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class SignUpAssociationUsecase {
   final AuthRepository _authRepository;
   SignUpAssociationUsecase(this._authRepository);
-  Future<User> call(AssociationModel association, String password) async {
+  Future<UserCredential> call(AssociationModel association, String password) async {
     return await _authRepository.signUpAssociation(association, password);
   }
 }

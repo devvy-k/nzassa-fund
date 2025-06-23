@@ -2,11 +2,13 @@ import 'dart:developer' as console;
 import 'dart:io';
 import 'package:crowfunding_project/core/constants/nav_ids.dart';
 import 'package:crowfunding_project/core/constants/project_categories.dart';
-import 'package:crowfunding_project/core/domain/entities/author.dart';
+import 'package:crowfunding_project/core/controllers/session_manager.dart';
+import 'package:crowfunding_project/core/data/models/project_model.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
 import 'package:crowfunding_project/ui/features/collect_creation/collect_creation_viewmodel.dart';
 import 'package:crowfunding_project/utils/custom_textformfield.dart';
 import 'package:crowfunding_project/utils/receipt_picker.dart';
+import 'package:crowfunding_project/utils/utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,6 +22,9 @@ class CollectCreationPage extends StatefulWidget {
 }
 
 class _CollectCreationPageState extends State<CollectCreationPage> {
+  final CollectCreationViewmodel collectCreationViewmodel =
+      Get.find<CollectCreationViewmodel>();
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -30,14 +35,17 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
   Project? project;
 
   void _submitForm() {
-     project = Project(
-      id: UniqueKey().toString(), // generate a unique id
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    project = ProjectModel(
+      id: Utils.generateId(),
+      title: titleController.text,
       content: descriptionController.text,
-      author: Author(
-        id: "", // replace with actual author id
-        name: "Author Name",
-        profilePicture: "",
-      ), // must be replaced with actual author data
+      author: Get.find<SessionManager>().user!.toAuthor(),
       images: [], // replace with actual images
       createdAt: DateTime.now(),
       totalCollected: 0,
@@ -48,6 +56,14 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
       tags: [], // replace with selected tags
       receipts: [],
     );
+  
+      Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+
+    Get.toNamed('/collect-preview', arguments: project, id: NavIds.collectCreation);
   }
 
   @override
@@ -100,9 +116,9 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
                       return null;
                     },
                   ),
-              
+
                   const SizedBox(height: 16),
-              
+
                   /// Description
                   _buildLabelWithInfo('Description'),
                   const SizedBox(height: 6),
@@ -119,16 +135,16 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
                       return null;
                     },
                   ),
-              
+
                   const SizedBox(height: 16),
-              
+
                   /// Photos
                   _buildLabelWithInfo('Médias'),
                   const SizedBox(height: 6),
                   _CollectMediaPicker(),
-              
+
                   const SizedBox(height: 16),
-              
+
                   /// Montant de la collecte
                   const Text(
                     'Montant de la collecte',
@@ -153,7 +169,7 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
                             }
                             return null;
                           },
-                        )
+                        ),
                       ),
                       const SizedBox(width: 8),
                       const Text(
@@ -162,16 +178,16 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
                       ),
                     ],
                   ),
-              
+
                   const SizedBox(height: 16),
-              
+
                   /// Justificatifs
                   _buildLabelWithInfo('Justificatifs'),
                   const SizedBox(height: 6),
                   ReceiptPicker(),
-              
+
                   const SizedBox(height: 16),
-              
+
                   /// Catégorie & Tags
                   Row(
                     children: [
@@ -180,9 +196,9 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
                       Expanded(child: _buildTagPlaceholder('Tags')),
                     ],
                   ),
-              
+
                   const SizedBox(height: 24),
-              
+
                   /// Boutons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -193,19 +209,7 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate() &&
-                              selectedCategory != null) {
-                            _submitForm();
-                            setState(() {
-                              _isLoading = true;
-                            });
-                            Future.delayed(const Duration(seconds: 3), () {
-                              setState(() {
-                                _isLoading = false;
-                              });
-                              Get.toNamed('/collect-preview', arguments: project, id: NavIds.collectCreation);
-                            });
-                          }
+                          _submitForm();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
@@ -242,12 +246,13 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
       ),
       value: selectedCategory,
       hint: const Text('Catégorie'),
-      items: ProjectCategories.values.map((category) {
-        return DropdownMenuItem<ProjectCategories>(
-          value: category,
-          child: Text(category.label),
-        );
-      }).toList(),
+      items:
+          ProjectCategories.values.map((category) {
+            return DropdownMenuItem<ProjectCategories>(
+              value: category,
+              child: Text(category.label),
+            );
+          }).toList(),
       onChanged: (value) {
         setState(() {
           selectedCategory = value;

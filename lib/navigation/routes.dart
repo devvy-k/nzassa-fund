@@ -5,6 +5,7 @@ import 'package:crowfunding_project/ui/features/auth/role_selection_screen.dart'
 import 'package:crowfunding_project/ui/features/auth/sign_in_screen.dart';
 import 'package:crowfunding_project/ui/features/auth/sign_up_association_screen.dart';
 import 'package:crowfunding_project/ui/features/auth/sign_up_person_screen.dart';
+import 'package:crowfunding_project/ui/features/onboarding/onboarding_screen.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
@@ -13,6 +14,7 @@ class AppRoutes {
     GetPage(name: '/signin', page: () => const SignInScreen(), binding: AuthBindings()),
     GetPage(name: '/signup-association', page: () => SignUpAssociationScreen()),
     GetPage(name: '/signup-person', page: () => SignUpPersonScreen()),
-    GetPage(name: '/role-selection', page: () => const RoleSelectionScreen()), 
+    GetPage(name: '/role-selection', page: () => const RoleSelectionScreen()),
+    GetPage(name: '/onboarding', page: () => const OnboardingScreen()), 
   ];
 }

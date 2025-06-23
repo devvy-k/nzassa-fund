@@ -9,15 +9,15 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._authRemoteDataSource);
 
   @override
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
+  Future<UserCredential> signInWithEmailAndPassword(String email, String password) async {
     return await _authRemoteDataSource.signInWithEmailAndPassword(email, password);
   }
   @override
-  Future<User> signUpPerson(PersonModel person, String password) async {
+  Future<UserCredential> signUpPerson(PersonModel person, String password) async {
     return await _authRemoteDataSource.signUpPerson(person, password);
   }
   @override
-  Future<User> signUpAssociation(AssociationModel association, String password) async {
+  Future<UserCredential> signUpAssociation(AssociationModel association, String password) async {
     return await _authRemoteDataSource.signUpAssociation(association, password);
   }
   @override

@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:developer' as console;
+import 'package:crowfunding_project/core/data/models/project_model.dart';
+import 'package:crowfunding_project/core/data/uistate.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
 import 'package:crowfunding_project/ui/features/collect_creation/collect_creation_viewmodel.dart';
 import 'package:crowfunding_project/ui/features/projects/component/profile_avatar.dart';
@@ -7,21 +10,65 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class ProjectPreview extends StatelessWidget {
-  final Project project;
+class ProjectPreview extends StatefulWidget {
+  final ProjectModel project;
   const ProjectPreview({super.key, required this.project});
 
   @override
+  State<ProjectPreview> createState() => _ProjectPreviewState();
+}
+
+class _ProjectPreviewState extends State<ProjectPreview> {
+  final CollectCreationViewmodel collectCreationViewmodel =
+      Get.find<CollectCreationViewmodel>();
+
+  void _lancerCollecte() {
+    collectCreationViewmodel.createProjectState.value = UiStateLoading();
+
+    try {
+      collectCreationViewmodel.createProject(widget.project);
+      Future.delayed(const Duration(seconds: 2), () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Collecte lancée avec succès !'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      });
+      Get.toNamed('/');
+    } catch (e) {
+      console.log('[ProjectPreview] Error launching collection: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final CollectCreationViewmodel collectCreationViewmodel = Get.find<CollectCreationViewmodel>();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_outlined),
           onPressed: () {
-        Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
         ),
+      ),
+      bottomNavigationBar: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              _lancerCollecte();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text('Lancer la collecte'),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -37,11 +84,11 @@ class ProjectPreview extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _ProjectHeader(project: project),
+                        _ProjectHeader(project: widget.project),
                         const SizedBox(height: 4.0),
                         Text(
-                          project.content != null
-                              ? project.content!
+                          widget.project.content != null
+                              ? widget.project.content!
                               : 'No content available',
                         ),
                         SizedBox(height: 6.0),
@@ -56,22 +103,20 @@ class ProjectPreview extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: _ProjectBudget(project: project),
+                    child: _ProjectBudget(project: widget.project),
                   ),
                   const SizedBox(height: 8.0),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: _ProjectStats(project: project),
+                    child: _ProjectStats(project: widget.project),
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
     );
-    
-
   }
 }
 
@@ -137,8 +182,7 @@ class _ProjectStats extends StatelessWidget {
                 color: Colors.grey[600],
                 size: 16.0,
               ),
-              onTap: () {
-              },
+              onTap: () {},
             ),
             _ProjectButton(
               icon: Icon(
@@ -158,7 +202,7 @@ class _ProjectStats extends StatelessWidget {
             ),
             _ProjectButton(
               icon: Icon(Icons.send, color: Colors.grey[600], size: 16.0),
-              onTap: () {}
+              onTap: () {},
             ),
           ],
         ),
@@ -220,6 +264,7 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
     collected = widget.project.totalCollected?.toDouble() ?? 0.0;
     target = widget.project.collectGoal.toDouble();
   }
+
   bool showTooltip = false;
 
   Timer? _timer;

@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class SignUpPersonUsecase {
   final AuthRepository _authRepository;
   SignUpPersonUsecase(this._authRepository);
-  Future<User> call(PersonModel person, String password) async {
+  Future<UserCredential> call(PersonModel person, String password) async {
     return await _authRepository.signUpPerson(person, password);
   }
 }

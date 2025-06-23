@@ -8,5 +8,4 @@ class Author {
     required this.name,
     required this.profilePicture,
   });
-
 }

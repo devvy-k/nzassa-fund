@@ -5,5 +5,8 @@ class GetProjectsUsecase {
   final ProjectRepository _projectRepository;
 
   GetProjectsUsecase(this._projectRepository);
-  Future<List<ProjectModel>> call() => _projectRepository.getProjects();
+  
+  Stream<List<ProjectModel>> call({List<String>? preferredCategories}) {
+    return _projectRepository.getProjects(preferredCategories: preferredCategories);
+  }
 }

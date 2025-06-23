@@ -1,3 +1,5 @@
+import 'package:crowfunding_project/core/domain/usecases/projects/create_project_usecase.dart';
+import 'package:crowfunding_project/services/auth_service.dart';
 import 'package:crowfunding_project/services/firestrore_service.dart';
 import 'package:crowfunding_project/core/data/datasources/projects_remote_datasource.dart';
 import 'package:crowfunding_project/core/data/repositories/project_repository_impl.dart';
@@ -11,6 +13,7 @@ import 'package:get/get.dart';
 class ProjectsBindings extends Bindings {
   @override
   void dependencies() {
+    Get.lazyPut(() => AuthService(), fenix: true);
     // Shared service
     Get.lazyPut(() => FirestroreService());
 
@@ -24,10 +27,11 @@ class ProjectsBindings extends Bindings {
 
     // Use case
     Get.lazyPut(() => GetProjectsUsecase(Get.find<ProjectRepository>()));
+    Get.lazyPut(() => CreateProjectUseCase(Get.find<ProjectRepository>()));
 
     // ViewModel
     Get.lazyPut(() => ProjectsViewmodel(Get.find<GetProjectsUsecase>()));
-    Get.lazyPut(() => CollectCreationViewmodel());
+    Get.lazyPut(() => CollectCreationViewmodel(Get.find<CreateProjectUseCase>()));
 
     // Controller
     Get.lazyPut(() => BaseController());

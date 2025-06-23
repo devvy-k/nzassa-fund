@@ -4,14 +4,14 @@ class AuthorModel extends Author {
   const AuthorModel({
     required super.id,
     required super.name,
-    required super.profilePicture,
+    required super.profilePicture
   });
 
   factory AuthorModel.fromJson(Map<String, dynamic> json) {
     return AuthorModel(
-      id: json['id'] ?? '', // ou json['id'] ?? UniqueKey().toString()
+      id: json['id'] ?? '',
       name: json['name'] ?? 'Utilisateur inconnu',
-      profilePicture: json['profilePicture'] ?? '', // ou une image par défaut
+      profilePicture: json['profilePicture'] ?? '',
     );
   }
 
@@ -19,7 +19,7 @@ class AuthorModel extends Author {
     return {
       'id': id,
       'name': name,
-      'profilePicture': profilePicture,
+      'profilePicture': profilePicture
     };
   }
 }

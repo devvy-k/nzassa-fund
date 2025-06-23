@@ -6,6 +6,8 @@ class PersonModel extends Person {
     required super.firstName,
     required super.lastName,
     required super.email,
+    super.preferredCategories,
+    super.profilePicture,
   });
 
   factory PersonModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +16,10 @@ class PersonModel extends Person {
       firstName: json['firstName'] as String,
       lastName: json['lastName'] as String,
       email: json['email'] as String,
+      preferredCategories: (json['preferredCategories'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      profilePicture: json['profilePicture'] as String?,
     );
   }
   Map<String, dynamic> toJson() {
@@ -22,6 +28,8 @@ class PersonModel extends Person {
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
+      'preferredCategories': preferredCategories,
+      'profilePicture': profilePicture,
     };
   }
 }

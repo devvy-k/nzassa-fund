@@ -16,6 +16,7 @@ class ProjectsScreen extends StatefulWidget {
 
 class _ProjectsScreenState extends State<ProjectsScreen> {
   final ProjectsViewmodel projectsViewmodel = Get.find<ProjectsViewmodel>();
+  final ScrollController scrollController = ScrollController();
 
   late SMITrigger check;
   late SMITrigger error;
@@ -31,17 +32,44 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     return controller;
   }
 
+
+  void scrollToTop(){
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final paymentStatus = projectsViewmodel.paymentStatus.value;
       final isLoading = projectsViewmodel.isLoading.value;
       final projects = projectsViewmodel.projects;
+      final hasNewProjects = projectsViewmodel.hasNewProjects.value;
 
       return Stack(
         children: [
           CustomScrollView(
+            controller: scrollController,
             slivers: [
+              if (hasNewProjects)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        scrollToTop();
+                        projectsViewmodel.hasNewProjects.value = false;
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Actualiser les projets'),
+                    ),
+                  ),
+                ),
               SliverToBoxAdapter(
                 child:
                     isLoading

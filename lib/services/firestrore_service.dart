@@ -1,58 +1,66 @@
 import 'dart:developer' as console show log;
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crowfunding_project/core/constants/firebase_contants.dart';
 import 'package:crowfunding_project/core/data/models/author_model.dart';
 import 'package:crowfunding_project/core/data/models/project_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class FirestroreService {
-  final FirebaseFirestore _firestroreService = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestoreService = FirebaseFirestore.instance;
+  final FirebaseStorage _storageService = FirebaseStorage.instance;
 
   // Retrieve all projects from the Firestore collection
-  Future<List<ProjectModel>> getPosts() async {
+  Stream<List<ProjectModel>> streamProjects() {
     try {
-      final projectsSnapshot =
-          await _firestroreService.collection('projects').get();
-      //console.log('[FirestoreService] Retrieved projects data: ${postsSnaphot.docs.map((doc) => doc.data()).toList()}');
+      final projectsCollection = _firestoreService.collection(
+        FirebaseConstants.projectsCollection,
+      );
 
-      // Temp cache for authors
-      final Map<String, AuthorModel> authorsCache = {};
+      return projectsCollection.snapshots().asyncMap((snapshot) async {
+        return snapshot.docs.map((doc){
+          final projectData = doc.data();
 
-      // async building for each project with putting author in cache
-      final projectFutures =
-          projectsSnapshot.docs.map((doc) async {
-            final projectData = doc.data();
-            final String authorId =
-                projectData['author']; // Get author ID from post data
+          final authorMap = projectData['author'] as Map<String, dynamic>;
+          final author = AuthorModel.fromJson(authorMap);
 
-            // Check if author is already in cache
-            AuthorModel author;
-            if (authorsCache.containsKey(authorId)) {
-              author = authorsCache[authorId]!;
-            } else {
-              final authorSnapshot =
-                  await _firestroreService
-                      .collection('users')
-                      .doc(authorId)
-                      .get();
-
-              if (!authorSnapshot.exists) {
-                throw Exception('Author not found for ID: $authorId');
-              }
-
-              final authorData = authorSnapshot.data()!;
-              author = AuthorModel.fromJson(authorData);
-              console.log('[FirestoreService] Author data: ${author.toJson()}');
-
-              // add author to cache
-              authorsCache[authorId] = author;
-            }
-            // Create PostModel instance
-            return ProjectModel.fromJson(doc.id, projectData, author);
-          }).toList();
-      console.log('[FirestoreService] Projects length : ${projectFutures.length}');
-      return await Future.wait(projectFutures);
+          return ProjectModel.fromJson(doc.id, projectData, author);
+        }).toList();
+      });
     } catch (e) {
       throw Exception('Failed to load projects: $e');
     }
+  }
+
+  // Create project
+  Future<void> createProject(ProjectModel project) async {
+    try {
+      await _firestoreService
+          .collection(FirebaseConstants.projectsCollection)
+          .doc(project.id)
+          .set(project.toJson());
+    } catch (e) {
+      throw Exception('Failed to create project: $e');
+    }
+  }
+
+  // upload media files
+  Future<List<String>> uploadMediaFiles(List<File> files, String projectId) async{
+    final List<String> uploadedFileUrls = [];
+    for (File file in files) {
+      try {
+        final ref = _storageService
+            .ref()
+            .child('${FirebaseConstants.projectsMediaFolder}'
+                '/$projectId/${file.path.split('/').last}');
+        final uploadTask = await ref.putFile(file);
+        final fileUrl = await uploadTask.ref.getDownloadURL();
+        uploadedFileUrls.add(fileUrl);
+      } catch (e) {
+        console.log('[FirestoreService] Failed to upload file: $e');
+      }
+    }
+    return uploadedFileUrls;
   }
 }

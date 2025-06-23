@@ -1,5 +1,14 @@
 import 'dart:ui';
 
+import 'package:crowfunding_project/core/constants/nav_ids.dart';
+import 'package:crowfunding_project/core/data/uistate.dart';
+import 'package:crowfunding_project/navigation/base_controller.dart';
+import 'package:crowfunding_project/navigation/base_screen.dart';
+import 'package:crowfunding_project/services/auth_service.dart';
+import 'package:crowfunding_project/ui/features/auth/auth_viewmodel.dart';
+import 'package:crowfunding_project/utils/custom_label.dart';
+import 'package:crowfunding_project/utils/custom_textformfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,6 +20,9 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final AuthViewmodel _authViewmodel = Get.find<AuthViewmodel>();
+  final AuthService _authService = Get.find<AuthService>();
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -20,18 +32,39 @@ class _SignInScreenState extends State<SignInScreen> {
   final double _opacity = 0.1;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _signIn() {
-    if (_formKey.currentState!.validate()) {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
+  void _signIn() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      // logic with viewmodel
+    try {
+      _authViewmodel.signInState.value = UiStateLoading();
+      final result = await _authViewmodel.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (result is UiStateSuccess<UserCredential>) {
+        await _authService.handleSignIn(result.data.user!);
+        Get.back();
+      }
+    } catch (e) {
+      _authViewmodel.signInState.value = UiStateError(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la connexion : ${e.toString()}'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -57,15 +90,30 @@ class _SignInScreenState extends State<SignInScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 40),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        icon: const Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                            _authViewmodel.signOutUsecase;
+                            },
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 20,
+                            ),
+                          ),
+                        ],
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -103,63 +151,44 @@ class _SignInScreenState extends State<SignInScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
-                                        const Text(
-                                          'Email',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
+                                        CustomLabel(
+                                          label: 'Email',
+                                          fontSize: 16,
+                                          color: Colors.white,
                                         ),
                                         const SizedBox(height: 6),
-                                        TextFormField(
+                                        CustomTextformfield(
                                           key: const Key('emailField'),
                                           controller: _emailController,
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            hintText: 'Entrez votre email',
-                                            filled: true,
-                                          ),
+                                          contentRequired: true,
+                                          hint: 'Entrez votre email',
+                                          keyBoardType: 'email',
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
                                               return 'Veuillez entrer votre email';
                                             }
-                                            final emailPattern = RegExp(
+                                            if (!RegExp(
                                               r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                                            );
-                                            if (!emailPattern.hasMatch(value)) {
+                                            ).hasMatch(value)) {
                                               return 'Veuillez entrer un email valide';
                                             }
                                             return null;
                                           },
                                         ),
                                         const SizedBox(height: 16),
-                                        const Text(
-                                          'Mot de passe',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
+                                        CustomLabel(
+                                          label: 'Mot de passe',
+                                          fontSize: 16,
+                                          color: Colors.white,
                                         ),
                                         const SizedBox(height: 6),
-                                        TextFormField(
+                                        CustomTextformfield(
                                           key: const Key('passwordField'),
                                           controller: _passwordController,
+                                          contentRequired: true,
+                                          hint: 'Entrez votre mot de passe',
                                           obscureText: true,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            hintText:
-                                                'Entrez votre mot de passe',
-                                            filled: true,
-                                          ),
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
@@ -201,13 +230,31 @@ class _SignInScreenState extends State<SignInScreen> {
                                                   BorderRadius.circular(12),
                                             ),
                                           ),
-                                          child: const Text(
-                                            'Se connecter',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
+                                          child: Obx(() {
+                                              final state = _authViewmodel.signInState.value;
+
+                                             if (state == null) {
+                                                return const Text(
+                                                  'Se Connecter',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                );
+                                              } else if (state is UiStateLoading) {
+                                                return const Center(
+                                                  child: CircularProgressIndicator(color: Colors.white),
+                                                );
+                                              } else {
+                                                return const Text(
+                                                  'Se connecter',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                );
+                                              }
+                                            }),
                                         ),
                                         const SizedBox(height: 16),
                                         const Row(

@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   letterSpacing: -1.2,
                 ),
               ),
-              centerTitle: false,
+              centerTitle: true,
               bottom: TabBar(
                 tabs: Constants.getHomeScreenTabs(_tabController.index),
                 controller: _tabController,

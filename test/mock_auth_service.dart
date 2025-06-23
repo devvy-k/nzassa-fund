@@ -2,6 +2,7 @@ import 'package:crowfunding_project/core/data/datasources/auth_remote_datasource
 import 'package:crowfunding_project/core/data/repositories/auth_repository_impl.dart';
 import 'package:crowfunding_project/core/domain/repositories/auth_repository.dart';
 import 'package:crowfunding_project/core/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:crowfunding_project/core/domain/usecases/auth/sign_up_association_usecase.dart';
 import 'package:crowfunding_project/services/auth_service.dart';
 import 'package:crowfunding_project/ui/features/auth/auth_viewmodel.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +18,7 @@ void main() {
   late AuthRemoteDataSource authRemoteDataSource;
   late AuthRepository authRepository;
   late SignInUsecase signInUsecase;
+  late SignUpAssociationUsecase signUpAssociationUsecase;
   late AuthViewmodel authViewmodel;
 
   setUp(() {
@@ -24,7 +26,8 @@ void main() {
     authRemoteDataSource = AuthRemoteDataSource(mockAuthService);
     authRepository = AuthRepositoryImpl(authRemoteDataSource);
     signInUsecase = SignInUsecase(authRepository);
-    authViewmodel = AuthViewmodel(signInUsecase);
+    signUpAssociationUsecase = SignUpAssociationUsecase(authRepository);
+    authViewmodel = AuthViewmodel(signInUsecase, signUpAssociationUsecase);
   });
 
   test('Sign in success sets error to null ', () async {

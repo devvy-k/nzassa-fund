@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crowfunding_project/core/controllers/session_manager.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
 import 'package:crowfunding_project/ui/features/projects/component/profile_avatar.dart';
 import 'package:crowfunding_project/utils/payment_bottom_sheet.dart';
@@ -114,18 +115,24 @@ class _ProjectStats extends StatelessWidget {
       children: [
         Row(
           children: [
-            _ProjectButton(
-              icon: Icon(
-                Icons.healing_outlined,
-                color: Colors.grey[600],
-                size: 16.0,
-              ),
-              onTap: () {
-                //PaymentBottomSheet.show(context);
-                Get.toNamed('/signin', arguments: {
-                  'projectId': project.id,
-                });
-              },
+            Obx(() {
+              final isLoggedIn = Get.find<SessionManager>().isLoggedIn;
+                return _ProjectButton(
+                  icon: Icon(
+                    Icons.healing_outlined,
+                    color: Colors.grey[600],
+                    size: 16.0,
+                  ),
+                  onTap: () {
+                    if (isLoggedIn) {
+                      PaymentBottomSheet.show(context);
+
+                    } else {
+                      Get.toNamed('/signin');
+                    }
+                  },
+                );
+              }
             ),
             _ProjectButton(
               icon: Icon(
@@ -133,7 +140,9 @@ class _ProjectStats extends StatelessWidget {
                 color: Colors.grey[600],
                 size: 16.0,
               ),
-              onTap: () => print('Like'),
+              onTap: () {
+                print('Like');
+              },
             ),
             _ProjectButton(
               icon: Icon(

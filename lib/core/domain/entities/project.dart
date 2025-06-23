@@ -1,10 +1,11 @@
 
-import 'package:crowfunding_project/core/domain/entities/author.dart';
+import 'package:crowfunding_project/core/data/models/author_model.dart';
 
 class Project {
   final String id;
+  final String? title;
   final String? content;
-  final Author author;
+  final AuthorModel author;
   final List<String> images;
   final DateTime createdAt;
   final int? totalCollected;
@@ -17,6 +18,7 @@ class Project {
 
   const Project({
     required this.id,
+    required this.title,
     required this.content,
     required this.author,
     required this.images,

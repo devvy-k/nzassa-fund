@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crowfunding_project/core/domain/entities/author.dart';
+import 'package:crowfunding_project/core/data/models/author_model.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
-import 'package:flutter/foundation.dart';
 
 class ProjectModel extends Project {
   ProjectModel({
     required super.id,
+    required super.title,
     required super.content,
     required super.author,
     required super.images,
@@ -22,7 +22,7 @@ class ProjectModel extends Project {
   factory ProjectModel.fromJson(
     String id,
     Map<String, dynamic> json,
-    Author author,
+    AuthorModel author,
   ) {
     // Parse date
     DateTime createdAt;
@@ -40,7 +40,8 @@ class ProjectModel extends Project {
     }
 
     return ProjectModel(
-      id: id.isNotEmpty ? id : UniqueKey().toString(),
+      id: id,
+      title: json['title'] ?? '',
       content: json['content'] ?? '',
       author: author,
       images: List<String>.from(json['images'] ?? []),
@@ -59,7 +60,7 @@ class ProjectModel extends Project {
     return {
       'id': id,
       'content': content,
-      'author': author.id,
+      'author': author.toJson(),
       'images': images,
       'createdAt': createdAt.toIso8601String(),
       'totalCollected': totalCollected,

@@ -1,9 +1,13 @@
-
 import 'dart:ui';
 
+import 'package:crowfunding_project/core/data/models/association_model.dart';
+import 'package:crowfunding_project/core/data/uistate.dart';
+import 'package:crowfunding_project/ui/features/auth/auth_viewmodel.dart';
+import 'package:crowfunding_project/utils/custom_label.dart';
 import 'package:crowfunding_project/utils/custom_textformfield.dart';
-import 'package:crowfunding_project/utils/receipt_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 
 class SignUpAssociationScreen extends StatefulWidget {
   const SignUpAssociationScreen({super.key});
@@ -14,6 +18,8 @@ class SignUpAssociationScreen extends StatefulWidget {
 }
 
 class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
+  final AuthViewmodel _authViewmodel = Get.find<AuthViewmodel>();
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _managerNameController = TextEditingController();
@@ -23,23 +29,12 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  final TextEditingController _orangeMoneyNumberController =
-      TextEditingController();
-  final TextEditingController _moovMoneyNumberController =
-      TextEditingController();
-  final TextEditingController _mtnMoneyNumberController =
-      TextEditingController();
-  final TextEditingController _waveMoneyNumberController =
-      TextEditingController();
-  final TextEditingController _facebookLink = TextEditingController();
-  final TextEditingController _instagramLink = TextEditingController();
-  final TextEditingController _twitterLink = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  
 
   final double _sigmaX = 5;
   final double _sigmaY = 5;
   final double _opacity = 0.1;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -49,36 +44,45 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _descriptionController.dispose();
-    _orangeMoneyNumberController.dispose();
-    _moovMoneyNumberController.dispose();
-    _mtnMoneyNumberController.dispose();
-    _waveMoneyNumberController.dispose();
-    _facebookLink.dispose();
-    _instagramLink.dispose();
-    _twitterLink.dispose();
     super.dispose();
   }
 
   void _signup() {
     if (_formKey.currentState?.validate() ?? false) {
-      // Handle form submission logic here
-      // For example, you can create an Association object and send it to the backend
-      // final association = Association(
-      //   id: 'some_id',
-      //   name: _nameController.text,
-      //   managerName: _managerNameController.text,
-      //   managerEmail: _managerEmailController.text,
-      //   emailAssociation: _emailAssociationController.text,
-      //   registrationFile: 'path/to/registration/file',
-      //   mobileMoneyNumbers: [],
-      //   profilePicture: 'path/to/profile/picture',
-      //   description: 'Description of the association',
-      //   socialLinks: [
-      //     {'facebook': _facebookLink.text},
-      //     {'instagram': _instagramLink.text},
-      //     {'twitter': _twitterLink.text},
-      //   ],
-      // );
+      _authViewmodel.signUpState.value = UiStateLoading();
+      final association = AssociationModel(
+        id: '',
+        name: _nameController.text.trim(),
+        managerName: _managerNameController.text.trim(),
+        managerEmail: _managerEmailController.text.trim(),
+        emailAssociation: _emailAssociationController.text.trim(),
+        verified: false,
+        description: _descriptionController.text.trim(),
+      );
+
+      try {
+        _authViewmodel.signUpAssociation(
+          association: association,
+          password: _passwordController.text.trim(),
+        );
+        Future.delayed(const Duration(seconds: 2), () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Inscription réussie !'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            Get.offAllNamed('/onboarding');
+        });
+      } catch (e) {
+        _authViewmodel.signUpState.value = UiStateError(e.toString());
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de l\'inscription : ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
@@ -116,10 +120,10 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: _buildLabel(
-                          'Créer un compte association',
-                          Colors.white,
-                          25,
+                        child: CustomLabel(
+                          label: 'Créer un compte association',
+                          color: Colors.white,
+                          fontSize: 25,
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -144,62 +148,103 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                   key: _formKey,
                                   child: SingleChildScrollView(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       children: [
                                         // Association Name
                                         Row(
                                           children: [
-                                            _buildLabel('Nom de l\'association', Colors.white, 16),
+                                            CustomLabel(
+                                              label: 'Nom de l\'association',
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
                                             const SizedBox(width: 5),
-                                            const Text('*',
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 16,
-                                                )),
+                                            const Text(
+                                              '*',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 16,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         const SizedBox(height: 6),
                                         CustomTextformfield(
-                                          key: const Key('associationNameField'),
-                                          hint: 'Entrez le nom de l\'association',
+                                          key: const Key(
+                                            'associationNameField',
+                                          ),
+                                          hint:
+                                              'Entrez le nom de l\'association',
                                           controller: _nameController,
                                           contentRequired: true,
                                           maxLines: 1,
                                           keyBoardType: 'text',
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Veuillez entrer le nom de l\'association';
+                                            }
+                                            if (value.length < 3) {
+                                              return 'Le nom doit contenir au moins 3 caractères';
+                                            }
+                                            return null;
+                                          },
                                         ),
                                         const SizedBox(height: 16),
                                         // Description
                                         Row(
                                           children: [
-                                            _buildLabel('Description de l\'association', Colors.white, 16),
+                                            CustomLabel(
+                                              label: 'Description de l\'association',
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
                                             const SizedBox(width: 5),
-                                            const Text('*',
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 16,
-                                                )),
+                                            const Text(
+                                              '*',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 16,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         const SizedBox(height: 6),
                                         CustomTextformfield(
                                           key: const Key('descriptionField'),
-                                          hint: 'Entrez une description de l\'association',
+                                          hint:
+                                              'Entrez une description de l\'association',
                                           controller: _descriptionController,
                                           contentRequired: true,
                                           maxLines: 5,
                                           keyBoardType: 'text',
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Veuillez entrer une description';
+                                            }
+                                            if (value.length < 10) {
+                                              return 'La description doit contenir au moins 10 caractères';
+                                            }
+                                            return null;
+                                          },
                                         ),
-                                        const SizedBox(height: 16),     
-                                        // Manager Name              
-                                         Row(
+                                        const SizedBox(height: 16),
+                                        // Manager Name
+                                        Row(
                                           children: [
-                                            _buildLabel('Nom du responsable', Colors.white, 16),
+                                            CustomLabel(
+                                              label: 'Nom du responsable',
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
                                             const SizedBox(width: 5),
-                                            const Text('*',
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 16,
-                                                )),
+                                            const Text(
+                                              '*',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 16,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         const SizedBox(height: 6),
@@ -215,24 +260,32 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                         // Manager Email
                                         Row(
                                           children: [
-                                            _buildLabel('Email du responsable', Colors.white, 16),
+                                            CustomLabel(
+                                              label: 'Email du responsable',
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
                                             const SizedBox(width: 5),
-                                            const Text('*',
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 16,
-                                                )),
+                                            const Text(
+                                              '*',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 16,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         const SizedBox(height: 6),
                                         CustomTextformfield(
                                           key: const Key('managerEmailField'),
-                                          hint: 'Entrez l\'email du responsable',
+                                          hint:
+                                              'Entrez l\'email du responsable',
                                           controller: _managerEmailController,
                                           contentRequired: true,
                                           maxLines: 1,
                                           validator: (value) {
-                                            if (value == null || value.isEmpty) {
+                                            if (value == null ||
+                                                value.isEmpty) {
                                               return 'Veuillez entrer l\'email du responsable';
                                             }
                                             final emailRegex = RegExp(
@@ -248,24 +301,35 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                         // Association Email
                                         Row(
                                           children: [
-                                            _buildLabel('Email de l\'association', Colors.white, 16),
+                                            CustomLabel(
+                                              label: 'Email de l\'association',
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
                                             const SizedBox(width: 5),
-                                            const Text('*',
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 16,
-                                                )),
+                                            const Text(
+                                              '*',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 16,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         const SizedBox(height: 6),
                                         CustomTextformfield(
-                                          key: const Key('associationEmailField'),
-                                          hint: 'Entrez l\'email de l\'association',
-                                          controller: _emailAssociationController,
+                                          key: const Key(
+                                            'associationEmailField',
+                                          ),
+                                          hint:
+                                              'Entrez l\'email de l\'association',
+                                          controller:
+                                              _emailAssociationController,
                                           contentRequired: true,
                                           maxLines: 1,
                                           validator: (value) {
-                                            if (value == null || value.isEmpty) {
+                                            if (value == null ||
+                                                value.isEmpty) {
                                               return 'Veuillez entrer l\'email de l\'association';
                                             }
                                             final emailRegex = RegExp(
@@ -281,13 +345,19 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                         // Password
                                         Row(
                                           children: [
-                                            _buildLabel('Mot de passe', Colors.white, 16),
+                                            CustomLabel(
+                                              label: 'Mot de passe',
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
                                             const SizedBox(width: 5),
-                                            const Text('*',
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 16,
-                                                )),
+                                            const Text(
+                                              '*',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 16,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         const SizedBox(height: 6),
@@ -300,7 +370,8 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                           obscureText: true,
                                           keyBoardType: 'text',
                                           validator: (value) {
-                                            if (value == null || value.isEmpty) {
+                                            if (value == null ||
+                                                value.isEmpty) {
                                               return 'Veuillez entrer un mot de passe';
                                             }
                                             if (value.length < 6) {
@@ -313,29 +384,40 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                         // Confirm Password
                                         Row(
                                           children: [
-                                            _buildLabel('Confirmer le mot de passe', Colors.white, 16),
+                                            CustomLabel(
+                                              label: 'Confirmer le mot de passe',
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
                                             const SizedBox(width: 5),
-                                            const Text('*',
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 16,
-                                                )),
+                                            const Text(
+                                              '*',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 16,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         const SizedBox(height: 6),
                                         CustomTextformfield(
-                                          key: const Key('confirmPasswordField'),
+                                          key: const Key(
+                                            'confirmPasswordField',
+                                          ),
                                           hint: 'Confirmez le mot de passe',
-                                          controller: _confirmPasswordController,
+                                          controller:
+                                              _confirmPasswordController,
                                           contentRequired: true,
                                           maxLines: 1,
                                           obscureText: true,
                                           keyBoardType: 'text',
                                           validator: (value) {
-                                            if (value == null || value.isEmpty) {
+                                            if (value == null ||
+                                                value.isEmpty) {
                                               return 'Veuillez confirmer le mot de passe';
                                             }
-                                            if (value != _passwordController.text) {
+                                            if (value !=
+                                                _passwordController.text) {
                                               return 'Les mots de passe ne correspondent pas';
                                             }
                                             return null;
@@ -343,9 +425,9 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                         ),
                                         const SizedBox(height: 16),
                                         // identification File
-                                        Row(
+                                        /*                                         Row(
                                           children: [
-                                            _buildLabel('Fichier d\'identification', Colors.white, 16),
+                                            CustomLabel('Fichier d\'identification', Colors.white, 16),
                                             const SizedBox(width: 5),
                                             const Text('*',
                                                 style: TextStyle(
@@ -354,7 +436,8 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                 )),
                                           ],
                                         ),
-                                        const SizedBox(height: 6),
+      */
+                                        /*                                         const SizedBox(height: 6),
                                         ReceiptPicker(),
                                         const SizedBox(height: 16),
                                           Row(
@@ -385,9 +468,9 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                 )
                                             ],
                                           ),
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 8), */
                                         // Mobile Money Numbers
-                                            Row(
+                                        /*                                             Row(
                                               children: [
                                                   Padding(
                                                   padding: const EdgeInsets.only(right: 8.0),
@@ -409,8 +492,8 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                 ),
 
                                               ],
-                                            ),
-                                        const SizedBox(height: 8),
+                                            ), */
+                                        /*                                         const SizedBox(height: 8),
                                             Row(
                                               children: [
                                                 Padding(
@@ -433,8 +516,8 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                 ),
                                               ],
                                             ),
-                                        const SizedBox(height: 8),
-                                            Row(
+                                        const SizedBox(height: 8), */
+                                        /*                                             Row(
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets.only(right: 8.0),
@@ -456,8 +539,8 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                 ),
                                               ],
                                             ),
-                                        const SizedBox(height: 8),
-                                            Row(
+                                        const SizedBox(height: 8), */
+                                        /*                                             Row(
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets.only(right: 8.0),
@@ -478,9 +561,9 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                   ),
                                                 ),
                                               ],
-                                            ),
+                                            ), */
 
-                                        const SizedBox(height: 16),
+                                        /*                                         const SizedBox(height: 16),
                                               const Row(
                                                 children: [
                                                   Expanded(
@@ -510,9 +593,9 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                   ),
                                                 ],
                                               ),
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 8), */
                                         // Social Media Links
-                                            Row(
+                                        /*                                             Row(
                                               children: [
                                                   Padding(
                                                   padding: const EdgeInsets.only(right: 8.0),
@@ -533,8 +616,8 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                 ),
                                                   ),
                                               ],
-                                            ),
-                                        const SizedBox(height: 8),
+                                            ), */
+                                        /*                                         const SizedBox(height: 8),
                                             Row(
                                               children: [
                                                 Padding(
@@ -557,8 +640,8 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                 ),
                                               ],
                                             ),
-                                        const SizedBox(height: 8),
-                                            Row(
+                                        const SizedBox(height: 8), */
+                                        /*                                             Row(
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets.only(right: 8.0),
@@ -579,27 +662,48 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
                                                   ),
                                                 ),
                                               ],
-                                            ),
+                                            ), */
                                         const SizedBox(height: 24),
                                         ElevatedButton(
                                           key: const Key('signUpButton'),
-                                          onPressed: _signup,
+                                          onPressed: () {
+                                            _signup();
+                                          },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.green,
                                             padding: const EdgeInsets.symmetric(
                                               vertical: 14,
                                             ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                             ),
                                           ),
-                                          child: const Text(
-                                            'Créer un compte',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
+                                          child: Obx(() {
+                                              final state = _authViewmodel.signUpState.value;
+
+                                             if (state == null) {
+                                                return const Text(
+                                                  'Créer un compte',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                );
+                                              } else if (state is UiStateLoading) {
+                                                return const Center(
+                                                  child: CircularProgressIndicator(color: Colors.white),
+                                                );
+                                              } else {
+                                                return const Text(
+                                                  'Créer un compte',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                );
+                                              }
+                                            }),
                                         ),
                                         const SizedBox(height: 24),
                                       ],
@@ -621,13 +725,4 @@ class _SignUpAssociationScreenState extends State<SignUpAssociationScreen> {
       ),
     );
   }
-
-  Widget _buildLabel(String label, Color color, double? fontSize) {
-    return Row(
-      children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize, color: color)),
-      ],
-    );
-  }
-
 }

@@ -1,7 +1,11 @@
+import 'dart:async';
 import 'dart:developer' as console;
 
+import 'package:crowfunding_project/core/controllers/session_manager.dart';
 import 'package:crowfunding_project/core/data/models/project_model.dart';
+import 'package:crowfunding_project/core/data/models/user_profile.dart';
 import 'package:crowfunding_project/core/domain/usecases/projects/get_projects_usecase.dart';
+
 import 'package:crowfunding_project/ui/features/projects/payment_status.dart';
 import 'package:get/get.dart';
 
@@ -11,8 +15,17 @@ class ProjectsViewmodel extends GetxController {
 
   // Reactive projects data
   final RxList<ProjectModel> projects = <ProjectModel>[].obs;
+  final RxList<ProjectModel> _lastProjects = <ProjectModel>[].obs;
+  final RxBool hasNewProjects = false.obs;
+
   final RxBool isLoading = true.obs;
+
   final Rx<PaymentStatus> paymentStatus = PaymentStatus.none.obs;
+
+  StreamSubscription<List<ProjectModel>>? _projectsSubscription;
+  StreamSubscription? _authSubscription;
+
+  List<String>? userPreferredCategories;
 
   void simulatePayment(bool success) async {
     if (success) {
@@ -30,21 +43,65 @@ class ProjectsViewmodel extends GetxController {
   @override
   void onInit() {
     console.log('[ProjectsViewmodel] onInit');
-    fetchProjects();
+    final session = Get.find<SessionManager>().user;
+
+      if (session != null && session.userType == UserType.person) {
+        userPreferredCategories = session.preferredCategories;
+      } else {
+        userPreferredCategories = null;
+      }
+
+      fetchProjects();
     super.onInit();
   }
 
   void fetchProjects() async {
+    _projectsSubscription?.cancel();
     isLoading.value = true;
-    getProjectsUsecase
-        .call()
-        .then((fetchedProjects) {
-          projects.assignAll(fetchedProjects);
-          isLoading.value = false;
-        })
-        .catchError((error) {
-          // Handle error
-          isLoading.value = false;
-        });
+
+    _projectsSubscription = getProjectsUsecase
+        .call(preferredCategories: userPreferredCategories)
+        .listen(
+          (fetchedProjects) {
+            isLoading.value = false;
+
+            if (projects.isEmpty) {
+              projects.assignAll(fetchedProjects);
+              _lastProjects.assignAll(fetchedProjects);
+              return;
+            }
+
+            // Check if there are new projects compared to the last fetched
+            if (!_areEqual(fetchedProjects, _lastProjects)) {
+              _lastProjects.assignAll(fetchedProjects);
+              hasNewProjects.value = true;
+            }
+          },
+          onError: (error) {
+            console.log('[ProjectsViewmodel] Error fetching projects: $error');
+            isLoading.value = false;
+          },
+        );
   }
+
+  void showNewProjects() {
+    projects.assignAll(_lastProjects);
+    hasNewProjects.value = false;
+  }
+
+  bool _areEqual(List<ProjectModel> list1, List<ProjectModel> list2) {
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i].id != list2[i].id) return false;
+    }
+    return true;
+  }
+
+  @override
+  void onClose() {
+    _authSubscription?.cancel();
+    _projectsSubscription?.cancel();
+    super.onClose();
+  }
+
 }

@@ -4,8 +4,8 @@ class Association {
   final String managerName;
   final String managerEmail;
   final String emailAssociation;
-  final String registrationFile;
-  final List<String> mobileMoneyNumbers;
+  final bool verified;
+  final List<String>? mobileMoneyNumbers;
   final String? profilePicture;
   final String description;
   final List<Map<String, dynamic>>? socialLinks;
@@ -16,9 +16,9 @@ class Association {
     required this.managerName,
     required this.managerEmail,
     required this.emailAssociation,
-    required this.registrationFile,
-    required this.mobileMoneyNumbers,
-    required this.profilePicture,
+    required this.verified,
+    this.mobileMoneyNumbers,
+    this.profilePicture,
     required this.description,
     this.socialLinks,
   });

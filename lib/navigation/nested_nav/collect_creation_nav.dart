@@ -1,5 +1,5 @@
 import 'package:crowfunding_project/core/constants/nav_ids.dart';
-import 'package:crowfunding_project/core/domain/entities/project.dart';
+import 'package:crowfunding_project/core/data/models/project_model.dart';
 import 'package:crowfunding_project/ui/features/collect_creation/collect_creation_page.dart';
 import 'package:crowfunding_project/ui/features/collect_creation/project_preview.dart';
 import 'package:flutter/widgets.dart';
@@ -14,7 +14,7 @@ class CollectCreationNav extends StatelessWidget {
       key: Get.nestedKey(NavIds.collectCreation),
       onGenerateRoute: (settings) { 
         if (settings.name == '/collect-preview') {
-          final project = settings.arguments as Project;
+          final project = settings.arguments as ProjectModel;
           return GetPageRoute(
             settings: settings,
             routeName: '/collectCreation',
