@@ -1,9 +1,6 @@
 import 'dart:ui';
 
-import 'package:crowfunding_project/core/constants/nav_ids.dart';
 import 'package:crowfunding_project/core/data/uistate.dart';
-import 'package:crowfunding_project/navigation/base_controller.dart';
-import 'package:crowfunding_project/navigation/base_screen.dart';
 import 'package:crowfunding_project/services/auth_service.dart';
 import 'package:crowfunding_project/ui/features/auth/auth_viewmodel.dart';
 import 'package:crowfunding_project/utils/custom_label.dart';

@@ -1,4 +1,5 @@
-import 'package:crowfunding_project/core/domain/entities/project.dart';
+import 'package:crowfunding_project/core/data/models/project_model.dart';
+import 'package:crowfunding_project/core/data/uistate.dart';
 import 'package:crowfunding_project/ui/features/projects/payment_status.dart';
 import 'package:crowfunding_project/ui/features/projects/project_container.dart';
 import 'package:crowfunding_project/ui/features/projects/project_viewmodel.dart';
@@ -47,7 +48,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   Widget build(BuildContext context) {
     return Obx(() {
       final paymentStatus = projectsViewmodel.paymentStatus.value;
-      final isLoading = projectsViewmodel.isLoading.value;
+      final state = projectsViewmodel.projectsState.value;
       final projects = projectsViewmodel.projects;
       final hasNewProjects = projectsViewmodel.hasNewProjects.value;
 
@@ -56,23 +57,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           CustomScrollView(
             controller: scrollController,
             slivers: [
-              if (hasNewProjects)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        scrollToTop();
-                        projectsViewmodel.hasNewProjects.value = false;
-                      },
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Actualiser les projets'),
-                    ),
-                  ),
-                ),
               SliverToBoxAdapter(
                 child:
-                    isLoading
+                  state is UiStateLoading
                         ? const Center(child: CircularProgressIndicator())
                         : projects.isEmpty
                         ? const Center(child: Text('No projects available'))
@@ -81,13 +68,36 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: projects.length,
                           itemBuilder: (context, index) {
-                            final Project project = projects[index];
+                            final ProjectModel project = projects[index];
                             return ProjectContainer(project: project);
                           },
                         ),
               ),
             ],
           ),
+              if (hasNewProjects)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  right: 16,
+                  child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        elevation: 4,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
+                      ),
+                      onPressed: () {
+                        scrollToTop();
+                        projectsViewmodel.showNewProjects();
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Actualiser les projets'),
+                    ),
+                ),
 
           /// Animation Check
           if (paymentStatus == PaymentStatus.loading)

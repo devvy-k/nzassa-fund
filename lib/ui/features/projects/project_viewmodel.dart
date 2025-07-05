@@ -4,6 +4,7 @@ import 'dart:developer' as console;
 import 'package:crowfunding_project/core/controllers/session_manager.dart';
 import 'package:crowfunding_project/core/data/models/project_model.dart';
 import 'package:crowfunding_project/core/data/models/user_profile.dart';
+import 'package:crowfunding_project/core/data/uistate.dart';
 import 'package:crowfunding_project/core/domain/usecases/projects/get_projects_usecase.dart';
 
 import 'package:crowfunding_project/ui/features/projects/payment_status.dart';
@@ -18,7 +19,7 @@ class ProjectsViewmodel extends GetxController {
   final RxList<ProjectModel> _lastProjects = <ProjectModel>[].obs;
   final RxBool hasNewProjects = false.obs;
 
-  final RxBool isLoading = true.obs;
+  final Rx<UiState<List<ProjectModel>>?> projectsState = Rx<UiState<List<ProjectModel>>?>(null);
 
   final Rx<PaymentStatus> paymentStatus = PaymentStatus.none.obs;
 
@@ -57,13 +58,13 @@ class ProjectsViewmodel extends GetxController {
 
   void fetchProjects() async {
     _projectsSubscription?.cancel();
-    isLoading.value = true;
+    projectsState.value = UiStateLoading();
 
     _projectsSubscription = getProjectsUsecase
         .call(preferredCategories: userPreferredCategories)
         .listen(
           (fetchedProjects) {
-            isLoading.value = false;
+            projectsState.value = UiStateSuccess(fetchedProjects);
 
             if (projects.isEmpty) {
               projects.assignAll(fetchedProjects);
@@ -79,7 +80,7 @@ class ProjectsViewmodel extends GetxController {
           },
           onError: (error) {
             console.log('[ProjectsViewmodel] Error fetching projects: $error');
-            isLoading.value = false;
+            projectsState.value = UiStateError(error);
           },
         );
   }

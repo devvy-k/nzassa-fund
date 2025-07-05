@@ -47,6 +47,8 @@ dependencies:
   firebase_auth: ^5.5.4
   http: ^1.4.0
   firebase_storage: ^12.4.7
+  cinetpay: ^1.0.8
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:

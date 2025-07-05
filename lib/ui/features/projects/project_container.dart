@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowfunding_project/core/controllers/session_manager.dart';
+import 'package:crowfunding_project/core/data/models/project_model.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
 import 'package:crowfunding_project/ui/features/projects/component/profile_avatar.dart';
 import 'package:crowfunding_project/utils/payment_bottom_sheet.dart';
@@ -10,7 +11,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ProjectContainer extends StatelessWidget {
-  final Project project;
+  final ProjectModel project;
   const ProjectContainer({super.key, required this.project});
 
   @override
@@ -27,6 +28,16 @@ class ProjectContainer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _ProjectHeader(project: project),
+                const SizedBox(height: 4.0),
+                Text(
+                  project.title != null ? project.title! : 'No title available',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 4.0),
                 Text(
                   project.content != null
@@ -199,7 +210,7 @@ class _ProjectButton extends StatelessWidget {
 }
 
 class _ProjectBudget extends StatefulWidget {
-  final Project project;
+  final ProjectModel project;
   const _ProjectBudget({required this.project});
 
   @override
@@ -232,7 +243,7 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
 
   @override
   Widget build(BuildContext context) {
-    final progress = (collected / target).clamp(0.0, 1.0);
+    final progress = (widget.project.totalCollected! / widget.project.collectGoal).clamp(0.0, 1.0);
     final percentage = (progress * 100).toStringAsFixed(1);
 
     return LayoutBuilder(
@@ -305,7 +316,7 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
               children: [
                 const SizedBox(width: 40),
                 Text(
-                  '🎯 ${formatAmount(target)}',
+                  '🎯 ${formatAmount((widget.project.collectGoal ?? 0).toDouble())}',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

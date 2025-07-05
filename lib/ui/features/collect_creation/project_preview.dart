@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:developer' as console;
+import 'package:crowfunding_project/core/constants/nav_ids.dart';
 import 'package:crowfunding_project/core/data/models/project_model.dart';
 import 'package:crowfunding_project/core/data/uistate.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
+import 'package:crowfunding_project/navigation/base_controller.dart';
 import 'package:crowfunding_project/ui/features/collect_creation/collect_creation_viewmodel.dart';
 import 'package:crowfunding_project/ui/features/projects/component/profile_avatar.dart';
 import 'package:crowfunding_project/utils/image_pager.dart';
@@ -35,7 +37,8 @@ class _ProjectPreviewState extends State<ProjectPreview> {
           ),
         );
       });
-      Get.toNamed('/');
+      Get.until(((route) => route.isFirst));
+      BaseController.to.changeIndex(NavIds.home);
     } catch (e) {
       console.log('[ProjectPreview] Error launching collection: $e');
     }
@@ -51,24 +54,6 @@ class _ProjectPreviewState extends State<ProjectPreview> {
             Navigator.of(context).pop();
           },
         ),
-      ),
-      bottomNavigationBar: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              _lancerCollecte();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text('Lancer la collecte'),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -111,6 +96,18 @@ class _ProjectPreviewState extends State<ProjectPreview> {
                     child: _ProjectStats(project: widget.project),
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: _lancerCollecte,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(vertical: 14.0),
+              ),
+              child: const Text(
+                'Lancer la collecte',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ),
           ],

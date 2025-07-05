@@ -1,6 +1,11 @@
+import 'dart:developer' as console;
+
+import 'package:cinetpay/cinetpay.dart';
 import 'package:crowfunding_project/ui/features/projects/project_viewmodel.dart';
+import 'package:crowfunding_project/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 
 class PaymentBottomSheet extends StatefulWidget {
@@ -25,6 +30,11 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
   final ProjectsViewmodel projectsViewmodel = Get.find<ProjectsViewmodel>();
   final TextEditingController _amountController = TextEditingController();
   String? _selectedPaymentMethod;
+  Map<String, dynamic>? response;
+  IconData? icon;
+  Color? color;
+  String? message;
+  bool show = false;
 
   @override
   void dispose() {
@@ -137,7 +147,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     );
   }
 
-  void _onConfirmPayment() {
+  void _onConfirmPayment() async {
     final amount = _amountController.text;
     if (amount.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -145,6 +155,88 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
       );
       return;
     }
+
+    double _amount;
+    try {
+      _amount = double.parse(amount);
+
+      if (_amount < 100) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Le montant doit être supérieur ou égal à 100'),
+          ),
+        );
+        return;
+      }
+      if (_amount > 1500000) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Le montant ne doit pas dépasser 1 500 000'),
+          ),
+        );
+        return;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Montant invalide')));
+      return;
+    }
+
+    final String transactionId = Utils.generateId();
+
+    await Get.to(
+      CinetPayCheckout(
+        title: 'Paiement',
+        titleStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        titleBackgroundColor: Colors.green,
+        configData: <String, dynamic>{
+          'apikey': dotenv.env['CINETPAY_API_KEY'],
+          'site_id': dotenv.env['CINETPAY_SITE_ID'],
+          'notify_url': 'https://nzassa-fund-back.onrender.com/cinetpay/notify',
+        },
+        paymentData: <String, dynamic>{
+          'transaction_id': transactionId,
+          'amount': _amount,
+          'currency': 'XOF',
+          'channels': 'ALL',
+          'description': 'Paiement pour $_selectedPaymentMethod',
+        },
+        waitResponse: (data) {
+          if (mounted) {
+            setState(() {
+              response = data;
+              icon =
+                  data['status'] == 'ACCEPTED'
+                      ? Icons.check_circle
+                      : Icons.mood_bad_rounded;
+              color =
+                  data['status'] == 'ACCEPTED'
+                      ? Colors.green
+                      : Colors.redAccent;
+              show = true;
+              Get.back();
+            });
+          }
+        },
+        onError: (error) {
+          if (mounted) {
+            setState(() {
+              response = error;
+              message = response!['description'];
+              console.log('Erreur: $error');
+              icon = Icons.warning_rounded;
+              color = Colors.yellowAccent;
+              show = true;
+              Get.back();
+            });
+          }
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Erreur: $error')));
+        },
+      ),
+    );
 
     print('Méthode: $_selectedPaymentMethod, Montant: $amount');
     Navigator.pop(context);
