@@ -122,32 +122,57 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         },
         itemBuilder: (context, index) {
           final item = Constants.onbardScreen[index];
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+
+          
+          return Stack(
+            fit: StackFit.expand,
             children: [
-              Image.asset(item['image']!, fit: BoxFit.fill, height: 300),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    Text(
-                      item['title']!,
-                      style: TextStyle(
-                        fontSize: 29,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                      textAlign: TextAlign.center,
+              Image.asset(
+                item['background']!,
+                fit: BoxFit.cover,
+              ),
+
+              // Overlay
+              Container(
+                color: Colors.black.withOpacity(isDark ? 0.4 : 0.2),
+              ),
+
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Logo
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 24.0),
+                    child: Image.asset(
+                      'assets/logos/logo_nzassa_fund.png',
+                      height: 60,
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      item['description']!,
-                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                      textAlign: TextAlign.center,
                     ),
-                  ],
-                ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Text(
+                          item['title']!,
+                          style: TextStyle(
+                            fontSize: 29,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          item['description']!,
+                          style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           );

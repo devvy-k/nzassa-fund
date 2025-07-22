@@ -31,7 +31,7 @@ class ProjectsViewmodel extends GetxController {
   void simulatePayment(bool success) async {
     if (success) {
       paymentStatus.value = PaymentStatus.loading;
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 4));
       paymentStatus.value = PaymentStatus.success;
     } else {
       paymentStatus.value = PaymentStatus.error;
@@ -69,7 +69,7 @@ class ProjectsViewmodel extends GetxController {
             if (projects.isEmpty) {
               projects.assignAll(fetchedProjects);
               _lastProjects.assignAll(fetchedProjects);
-              return;
+              return; 
             }
 
             // Check if there are new projects compared to the last fetched

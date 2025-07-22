@@ -35,6 +35,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
   Color? color;
   String? message;
   bool show = false;
+  bool isSuccess = false;
 
   @override
   void dispose() {
@@ -206,6 +207,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
           if (mounted) {
             setState(() {
               response = data;
+              isSuccess = data['status'] == 'ACCEPTED';
               icon =
                   data['status'] == 'ACCEPTED'
                       ? Icons.check_circle
@@ -240,6 +242,9 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
 
     print('Méthode: $_selectedPaymentMethod, Montant: $amount');
     Navigator.pop(context);
-    projectsViewmodel.simulatePayment(true);
+    projectsViewmodel.simulatePayment(isSuccess);
+    console.log(
+      '[PaymentBottomSheet] Payment response: $response',
+    );
   }
 }

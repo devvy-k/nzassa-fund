@@ -1,0 +1,17 @@
+flutter_native_splash:
+  color: "#154A88"
+  image: assets/logos/logo_nzassa_fund.png
+
+  color_dark: "#0D1A2F"
+  image_dark: assets/logos/logo_nzassa_fund.png
+
+  android_12:
+    image: assets/logos/logo_nzassa_fund.png
+    color: "#154A88"
+    icon_background_color: "#F5F5F5"
+
+    image_dark: assets/logos/logo_nzassa_fund.png
+    color_dark: "#0D1A2F"
+    icon_background_color_dark: "#1E1E1E"
+  
+  web: false

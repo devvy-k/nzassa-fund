@@ -29,11 +29,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-              backgroundColor: Colors.white,
               title: const Text(
                 "N'Zassa Fund",
                 style: TextStyle(
-                  color: Colors.blue,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   letterSpacing: -1.2,

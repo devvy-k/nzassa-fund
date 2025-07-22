@@ -19,7 +19,6 @@ class ProjectContainer extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5.0),
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      color: Colors.white,
       child: Column(
         children: [
           Padding(
@@ -34,7 +33,6 @@ class ProjectContainer extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
-                    color: Colors.black87,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -97,10 +95,10 @@ class _ProjectHeader extends StatelessWidget {
                 children: [
                   Text(
                     project.createdAt.toString(),
-                    style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                    style: const TextStyle(fontSize: 12.0),
                   ),
                   const SizedBox(width: 8.0),
-                  const Icon(Icons.public, size: 12.0, color: Colors.grey),
+                  const Icon(Icons.public, size: 12.0),
                 ],
               ),
             ],
@@ -108,7 +106,7 @@ class _ProjectHeader extends StatelessWidget {
         ),
         IconButton(
           onPressed: () => print('More options'),
-          icon: const Icon(Icons.more_horiz, color: Colors.grey),
+          icon: const Icon(Icons.more_horiz),
         ),
       ],
     );
@@ -131,7 +129,6 @@ class _ProjectStats extends StatelessWidget {
                 return _ProjectButton(
                   icon: Icon(
                     Icons.healing_outlined,
-                    color: Colors.grey[600],
                     size: 16.0,
                   ),
                   onTap: () {
@@ -148,7 +145,6 @@ class _ProjectStats extends StatelessWidget {
             _ProjectButton(
               icon: Icon(
                 Icons.favorite_border,
-                color: Colors.grey[600],
                 size: 16.0,
               ),
               onTap: () {
@@ -158,13 +154,12 @@ class _ProjectStats extends StatelessWidget {
             _ProjectButton(
               icon: Icon(
                 Icons.comment_outlined,
-                color: Colors.grey[600],
                 size: 16.0,
               ),
               onTap: () => print('Comment'),
             ),
             _ProjectButton(
-              icon: Icon(Icons.send, color: Colors.grey[600], size: 16.0),
+              icon: Icon(Icons.send, size: 16.0),
               onTap: () => print('send'),
             ),
           ],
@@ -185,7 +180,6 @@ class _ProjectButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Material(
-        color: Colors.white,
         child: InkWell(
           onTap: onTap,
           child: Container(
@@ -198,7 +192,7 @@ class _ProjectButton extends StatelessWidget {
                 const SizedBox(width: 4.0),
                 Text(
                   countValue.toString(),
-                  style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                  style: const TextStyle(fontSize: 12.0),
                 ),
               ],
             ),
@@ -279,7 +273,6 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
                     '$percentage%',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
                     ),
                   ),
                   if (showTooltip)
@@ -300,7 +293,6 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
                           child: Text(
                             formatAmount(collected),
                             style: const TextStyle(
-                              color: Colors.white,
                               fontSize: 12,
                             ),
                           ),
@@ -320,7 +312,6 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blueGrey,
                   ),
                 ),
               ],
