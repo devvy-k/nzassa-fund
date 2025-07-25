@@ -36,6 +36,9 @@ class _CustomTextformfieldState extends State<CustomTextformfield> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: TextStyle(
+        fontSize: 13,
+      ),
       controller: widget.controller,
       maxLines: widget.maxLines,
       obscureText: _obscureText,

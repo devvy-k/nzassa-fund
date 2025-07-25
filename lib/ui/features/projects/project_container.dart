@@ -5,6 +5,7 @@ import 'package:crowfunding_project/core/controllers/session_manager.dart';
 import 'package:crowfunding_project/core/data/models/project_model.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
 import 'package:crowfunding_project/ui/features/projects/component/profile_avatar.dart';
+import 'package:crowfunding_project/ui/features/projects/project_viewmodel.dart';
 import 'package:crowfunding_project/utils/payment_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -113,57 +114,71 @@ class _ProjectHeader extends StatelessWidget {
   }
 }
 
-class _ProjectStats extends StatelessWidget {
-  final Project project;
+class _ProjectStats extends StatefulWidget {
+  final ProjectModel project;
 
   const _ProjectStats({required this.project});
+
+  @override
+  State<_ProjectStats> createState() => _ProjectStatsState();
+}
+
+class _ProjectStatsState extends State<_ProjectStats> {
+  final projectsViewmodel = Get.find<ProjectsViewmodel>();
+  bool isLiked = false;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            Obx(() {
-              final isLoggedIn = Get.find<SessionManager>().isLoggedIn;
-                return _ProjectButton(
-                  icon: Icon(
-                    Icons.healing_outlined,
-                    size: 16.0,
-                  ),
-                  onTap: () {
-                    if (isLoggedIn) {
-                      PaymentBottomSheet.show(context);
-
-                    } else {
-                      Get.toNamed('/signin');
-                    }
-                  },
-                );
-              }
-            ),
-            _ProjectButton(
-              icon: Icon(
-                Icons.favorite_border,
-                size: 16.0,
+        Obx(() {
+          final isLoggedIn = Get.find<SessionManager>().isLoggedIn;
+          return Row(
+            children: [
+              _ProjectButton(
+                icon: Icon(Icons.healing_outlined, size: 16.0),
+                onTap: () {
+                  if (isLoggedIn) {
+                    PaymentBottomSheet.show(context);
+                  } else {
+                    Get.toNamed('/signin');
+                  }
+                },
               ),
-              onTap: () {
-                print('Like');
-              },
-            ),
-            _ProjectButton(
-              icon: Icon(
-                Icons.comment_outlined,
-                size: 16.0,
+              _ProjectButton(
+                icon: Icon(
+                  isLiked ? Icons.favorite : Icons.favorite_border,
+                  size: 16.0,
+                  color:
+                      isLiked
+                          ? Colors.red
+                          : Theme.of(context).colorScheme.onSurface,
+                ),
+                onTap: () {
+                  if (isLoggedIn) {
+                    setState(() {
+                      isLiked = !isLiked;
+                    });
+                    projectsViewmodel.toggleLikeProject(
+                      widget.project.id,
+                      Get.find<SessionManager>().user!.id,
+                    );
+                  } else {
+                    Get.toNamed('/signin');
+                  }
+                },
               ),
-              onTap: () => print('Comment'),
-            ),
-            _ProjectButton(
-              icon: Icon(Icons.send, size: 16.0),
-              onTap: () => print('send'),
-            ),
-          ],
-        ),
+              _ProjectButton(
+                icon: Icon(Icons.comment_outlined, size: 16.0),
+                onTap: () => print('Comment'),
+              ),
+              _ProjectButton(
+                icon: Icon(Icons.send, size: 16.0),
+                onTap: () => print('send'),
+              ),
+            ],
+          );
+        }),
       ],
     );
   }
@@ -237,7 +252,9 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
 
   @override
   Widget build(BuildContext context) {
-    final progress = (widget.project.totalCollected! / widget.project.collectGoal).clamp(0.0, 1.0);
+    final progress = (widget.project.totalCollected! /
+            widget.project.collectGoal)
+        .clamp(0.0, 1.0);
     final percentage = (progress * 100).toStringAsFixed(1);
 
     return LayoutBuilder(
@@ -271,9 +288,7 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
                   ),
                   Text(
                     '$percentage%',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   if (showTooltip)
                     Positioned(
@@ -292,9 +307,7 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
                           ),
                           child: Text(
                             formatAmount(collected),
-                            style: const TextStyle(
-                              fontSize: 12,
-                            ),
+                            style: const TextStyle(fontSize: 12),
                           ),
                         ),
                       ),
@@ -322,3 +335,4 @@ class _ProjectBudgetState extends State<_ProjectBudget> {
     );
   }
 }
+

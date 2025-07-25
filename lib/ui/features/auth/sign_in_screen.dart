@@ -5,6 +5,7 @@ import 'package:crowfunding_project/services/auth_service.dart';
 import 'package:crowfunding_project/ui/features/auth/auth_viewmodel.dart';
 import 'package:crowfunding_project/utils/custom_label.dart';
 import 'package:crowfunding_project/utils/custom_textformfield.dart';
+import 'package:crowfunding_project/utils/theme/custom_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,7 +27,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   final double _sigmaX = 5;
   final double _sigmaY = 5;
-  final double _opacity = 0.1;
+  final double _opacity = 0.9;
 
   @override
   void initState() {
@@ -68,7 +69,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: CustomTheme.blueAccent,
       body: LayoutBuilder(
         builder: (context, constraints) {
           return ConstrainedBox(
@@ -77,12 +78,6 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Image.asset(
-                    'assets/images/bg_sign_in.jpg',
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    fit: BoxFit.cover,
-                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -96,10 +91,10 @@ class _SignInScreenState extends State<SignInScreen> {
                             },
                             icon: const Icon(
                               Icons.arrow_back_ios,
-                              color: Colors.white,
                               size: 20,
                             ),
                           ),
+                          // Sign Out Button : delete after testing
                           IconButton(
                             onPressed: () {
                             _authViewmodel.signOutUsecase;
@@ -119,7 +114,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -135,7 +129,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(_opacity),
+                                  color: Theme.of(context).colorScheme.surface.withValues(alpha: (_opacity)),
                                   borderRadius: const BorderRadius.all(
                                     Radius.circular(30.0),
                                   ),
@@ -151,7 +145,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                         CustomLabel(
                                           label: 'Email',
                                           fontSize: 16,
-                                          color: Colors.white,
                                         ),
                                         const SizedBox(height: 6),
                                         CustomTextformfield(
@@ -177,7 +170,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                         CustomLabel(
                                           label: 'Mot de passe',
                                           fontSize: 16,
-                                          color: Colors.white,
                                         ),
                                         const SizedBox(height: 6),
                                         CustomTextformfield(
@@ -208,7 +200,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                               'Mot de passe oublié ?',
                                               style: TextStyle(
                                                 fontSize: 14,
-                                                color: Colors.white,
                                               ),
                                             ),
                                           ),
@@ -258,7 +249,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                           children: [
                                             Expanded(
                                               child: Divider(
-                                                color: Colors.white,
                                                 thickness: 1.5,
                                               ),
                                             ),
@@ -269,14 +259,12 @@ class _SignInScreenState extends State<SignInScreen> {
                                               child: Text(
                                                 'OU',
                                                 style: TextStyle(
-                                                  color: Colors.white,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                             ),
                                             Expanded(
                                               child: Divider(
-                                                color: Colors.white,
                                                 thickness: 1.5,
                                               ),
                                             ),
@@ -340,8 +328,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                             const Text(
                                               'Vous n\'avez pas de compte ?',
                                               style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white,
                                               ),
                                             ),
                                             GestureDetector(
@@ -351,7 +337,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                               child: const Text(
                                                 ' S\'inscrire',
                                                 style: TextStyle(
-                                                  fontSize: 16,
                                                   color: Colors.green,
                                                   fontWeight: FontWeight.bold,
                                                 ),

@@ -47,7 +47,6 @@ class _ReceiptPickerState extends State<ReceiptPicker> {
           child: Container(
             height: 120,
             decoration: BoxDecoration(
-              color: Colors.grey.shade200,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -83,7 +82,6 @@ class _ReceiptPickerState extends State<ReceiptPicker> {
                       child: Container(
                         width: 80,
                         height: 80,
-                        color: Colors.grey.shade300,
                         child: Image.file(file, fit: BoxFit.cover),
                       ),
                     ),
@@ -100,7 +98,6 @@ class _ReceiptPickerState extends State<ReceiptPicker> {
                           child: const Icon(
                             Icons.close,
                             size: 18,
-                            color: Colors.white,
                           ),
                         ),
                       ),

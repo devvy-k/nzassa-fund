@@ -50,7 +50,7 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
       createdAt: DateTime.now(),
       totalCollected: 0,
       collectGoal: int.tryParse(amountController.text) ?? 0,
-      likes: 0,
+      likes: [],
       comments: [],
       category: selectedCategory!.name,
       tags: [], // replace with selected tags
@@ -78,20 +78,16 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const BackButton(),
         title: const Text(
           'Lancer une collecte',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.orange,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
         elevation: 0,
       ),
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Stack(
@@ -242,10 +238,10 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
     return DropdownButtonFormField<ProjectCategories>(
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
-        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
       ),
       value: selectedCategory,
-      hint: const Text('Catégorie'),
+      hint: const Text('Catégorie', style: TextStyle(fontSize: 13)),
       items:
           ProjectCategories.values.map((category) {
             return DropdownMenuItem<ProjectCategories>(
@@ -273,7 +269,6 @@ class _CollectCreationPageState extends State<CollectCreationPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -358,7 +353,6 @@ class __CollectMediaPickerState extends State<_CollectMediaPicker> {
           child: Container(
             height: 120,
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -395,7 +389,6 @@ class __CollectMediaPickerState extends State<_CollectMediaPicker> {
                       child: Container(
                         width: 100,
                         height: 100,
-                        color: Colors.grey.shade300,
                         child:
                             isVideo
                                 ? _videoControllers[file.path] != null
@@ -428,7 +421,6 @@ class __CollectMediaPickerState extends State<_CollectMediaPicker> {
                                             const Icon(
                                               Icons.play_circle_fill,
                                               size: 50,
-                                              color: Colors.white,
                                             ),
                                         ],
                                       ),
@@ -452,7 +444,6 @@ class __CollectMediaPickerState extends State<_CollectMediaPicker> {
                           child: const Icon(
                             Icons.close,
                             size: 18,
-                            color: Colors.white,
                           ),
                         ),
                       ),

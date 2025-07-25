@@ -1,4 +1,5 @@
 import 'package:crowfunding_project/core/domain/usecases/projects/create_project_usecase.dart';
+import 'package:crowfunding_project/core/domain/usecases/projects/toggle_like_project_usecase.dart';
 import 'package:crowfunding_project/services/auth_service.dart';
 import 'package:crowfunding_project/services/firestrore_service.dart';
 import 'package:crowfunding_project/core/data/datasources/projects_remote_datasource.dart';
@@ -28,9 +29,10 @@ class ProjectsBindings extends Bindings {
     // Use case
     Get.lazyPut(() => GetProjectsUsecase(Get.find<ProjectRepository>()));
     Get.lazyPut(() => CreateProjectUseCase(Get.find<ProjectRepository>()));
+    Get.lazyPut(() => ToggleLikeProjectUsecase(Get.find<ProjectRepository>()));
 
     // ViewModel
-    Get.lazyPut(() => ProjectsViewmodel(Get.find<GetProjectsUsecase>()));
+    Get.lazyPut(() => ProjectsViewmodel(Get.find<GetProjectsUsecase>(), Get.find<ToggleLikeProjectUsecase>()));
     Get.lazyPut(() => CollectCreationViewmodel(Get.find<CreateProjectUseCase>()));
 
     // Controller

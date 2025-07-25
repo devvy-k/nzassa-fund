@@ -3,4 +3,5 @@ class FirebaseConstants {
   static const String authorsCollection = 'authors';
   static const String projectsCollection = 'projects';
   static const String projectsMediaFolder = 'projects_media';
+  static const String commentsCollection = 'comments';
 }

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crowfunding_project/core/data/models/author_model.dart';
+import 'package:crowfunding_project/core/data/models/comment_model.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
 
 class ProjectModel extends Project {
@@ -46,10 +47,10 @@ class ProjectModel extends Project {
       author: author,
       images: List<String>.from(json['images'] ?? []),
       createdAt: createdAt,
-      likes: json['likes'] ?? 0,
+      likes: List<String>.from(json['likes'] ?? []),
       totalCollected: json['totalCollected'] ?? 0,
       collectGoal: json['collectGoal'] ?? 0,
-      comments: List<String>.from(json['comments'] ?? []),
+      comments: List<CommentModel>.from(json['comments'] ?? []),
       category: json['category'] ?? '',
       tags: List<String>.from(json['tags'] ?? []),
       receipts: List<String>.from(json['receipts'] ?? []),

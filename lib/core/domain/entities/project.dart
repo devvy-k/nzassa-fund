@@ -1,5 +1,6 @@
 
 import 'package:crowfunding_project/core/data/models/author_model.dart';
+import 'package:crowfunding_project/core/data/models/comment_model.dart';
 
 class Project {
   final String id;
@@ -10,8 +11,8 @@ class Project {
   final DateTime createdAt;
   final int? totalCollected;
   final int collectGoal;
-  final int? likes;
-  final List<String>? comments;
+  final List<String>? likes;
+  final List<CommentModel>? comments;
   final String? category;
   final List<String>? tags;
   final List<String>? receipts;

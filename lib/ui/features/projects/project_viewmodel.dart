@@ -6,13 +6,15 @@ import 'package:crowfunding_project/core/data/models/project_model.dart';
 import 'package:crowfunding_project/core/data/models/user_profile.dart';
 import 'package:crowfunding_project/core/data/uistate.dart';
 import 'package:crowfunding_project/core/domain/usecases/projects/get_projects_usecase.dart';
+import 'package:crowfunding_project/core/domain/usecases/projects/toggle_like_project_usecase.dart';
 
 import 'package:crowfunding_project/ui/features/projects/payment_status.dart';
 import 'package:get/get.dart';
 
 class ProjectsViewmodel extends GetxController {
   final GetProjectsUsecase getProjectsUsecase;
-  ProjectsViewmodel(this.getProjectsUsecase);
+  final ToggleLikeProjectUsecase toggleLikeProjectUsecase;
+  ProjectsViewmodel(this.getProjectsUsecase, this.toggleLikeProjectUsecase);
 
   // Reactive projects data
   final RxList<ProjectModel> projects = <ProjectModel>[].obs;
@@ -24,7 +26,6 @@ class ProjectsViewmodel extends GetxController {
   final Rx<PaymentStatus> paymentStatus = PaymentStatus.none.obs;
 
   StreamSubscription<List<ProjectModel>>? _projectsSubscription;
-  StreamSubscription? _authSubscription;
 
   List<String>? userPreferredCategories;
 
@@ -100,9 +101,16 @@ class ProjectsViewmodel extends GetxController {
 
   @override
   void onClose() {
-    _authSubscription?.cancel();
     _projectsSubscription?.cancel();
     super.onClose();
+  }
+
+  Future<void> toggleLikeProject(String projectId, String userId) async {
+    try {
+      await toggleLikeProjectUsecase.call(projectId, userId);
+    } catch (e) {
+      console.log('[ProjectsViewmodel] Error toggling like: $e');
+    }
   }
 
 }
