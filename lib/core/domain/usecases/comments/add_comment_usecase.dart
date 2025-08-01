@@ -19,7 +19,7 @@ class AddCommentUsecase {
         projectId: projectId,
         content: content,
         user: user,
-        parentCommentId: parentCommentId,
+        parentCommentId: parentCommentId ?? '',
       );
     } catch (e) {
       console.log('Error adding comment: $e');

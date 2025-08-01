@@ -4,8 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowfunding_project/core/controllers/session_manager.dart';
 import 'package:crowfunding_project/core/data/models/project_model.dart';
 import 'package:crowfunding_project/core/domain/entities/project.dart';
+import 'package:crowfunding_project/ui/features/comments/comment_bottom_sheet.dart';
 import 'package:crowfunding_project/ui/features/projects/component/profile_avatar.dart';
 import 'package:crowfunding_project/ui/features/projects/project_viewmodel.dart';
+import 'package:crowfunding_project/utils/media_pager.dart';
 import 'package:crowfunding_project/utils/payment_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,10 +51,7 @@ class ProjectContainer extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: CachedNetworkImage(
-              imageUrl:
-                  'https://images.pexels.com/photos/12199063/pexels-photo-12199063.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-            ),
+            child: MediaPager(mediaUrls: ['https://images.pexels.com/photos/12199063/pexels-photo-12199063.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'],)
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -170,7 +169,16 @@ class _ProjectStatsState extends State<_ProjectStats> {
               ),
               _ProjectButton(
                 icon: Icon(Icons.comment_outlined, size: 16.0),
-                onTap: () => print('Comment'),
+                onTap: () {
+                  if (isLoggedIn) {
+                    CommentsBottomSheet.show(
+                      context,
+                      widget.project,
+                    );
+                  } else {
+                    Get.toNamed('/signin');
+                  }
+                },
               ),
               _ProjectButton(
                 icon: Icon(Icons.send, size: 16.0),

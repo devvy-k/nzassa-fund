@@ -126,16 +126,23 @@ extension CommentService on FirestroreService {
   }
 
   Stream<List<CommentModel>> streamComments(String projectId, {String? parentCommentId}){
-    return _firestoreService
-        .collection(FirebaseConstants.projectsCollection)
-        .doc(projectId)
-        .collection(FirebaseConstants.commentsCollection)
-        .where('parentCommentId', isEqualTo: parentCommentId)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => CommentModel.fromFirestore(doc))
-            .toList());
+    try {
+      final comments = _firestoreService
+          .collection(FirebaseConstants.projectsCollection)
+          .doc(projectId)
+          .collection(FirebaseConstants.commentsCollection)
+          //.where('parentCommentId', isEqualTo: parentCommentId)
+          //.orderBy('createdAt', descending: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => CommentModel.fromFirestore(doc))
+              .toList());
+      console.log('[FirestoreService] Successfully fetched comments for project: $projectId');
+      return comments;
+    } catch (e) {
+      console.log('[FirestoreService] Failed to fetch comments: $e');
+      throw Exception('Failed to fetch comments: $e');
+    }
   }
 
   Future<void> deleteComment(String postId, String commentId) async {

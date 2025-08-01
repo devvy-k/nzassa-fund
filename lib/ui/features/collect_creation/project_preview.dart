@@ -7,7 +7,7 @@ import 'package:crowfunding_project/core/domain/entities/project.dart';
 import 'package:crowfunding_project/navigation/base_controller.dart';
 import 'package:crowfunding_project/ui/features/collect_creation/collect_creation_viewmodel.dart';
 import 'package:crowfunding_project/ui/features/projects/component/profile_avatar.dart';
-import 'package:crowfunding_project/utils/image_pager.dart';
+import 'package:crowfunding_project/utils/media_pager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -61,7 +61,6 @@ class _ProjectPreviewState extends State<ProjectPreview> {
             Container(
               margin: const EdgeInsets.symmetric(vertical: 5.0),
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              color: Colors.white,
               child: Column(
                 children: [
                   Padding(
@@ -82,32 +81,31 @@ class _ProjectPreviewState extends State<ProjectPreview> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ImagePager(
-                      images: collectCreationViewmodel.mediaFiles,
+                    child: MediaPager(
+                      mediaUrls: [
+                      'https://images.pexels.com/photos/31095000/pexels-photo-31095000.jpeg?_gl=1*1bjxwzb*_ga*NTk1MjM5NjEuMTc0NDkzMDE5NQ..*_ga_8JE65Q40S6*czE3NTM4OTYxMDYkbzQkZzEkdDE3NTM4OTYxNjIkajQkbDAkaDA.', 
+                      'https://images.pexels.com/photos/33217150/pexels-photo-33217150.jpeg?_gl=1*1vsr0ky*_ga*NTk1MjM5NjEuMTc0NDkzMDE5NQ..*_ga_8JE65Q40S6*czE3NTM4OTYxMDYkbzQkZzEkdDE3NTM4OTYyMTkkajQyJGwwJGgw',
+                      'https://cdn.pixabay.com/video/2024/06/01/214765_large.mp4'], // change to widget.project.mediaUrls if available
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: _ProjectBudget(project: widget.project),
                   ),
-                  const SizedBox(height: 8.0),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: _ProjectStats(project: widget.project),
-                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: _lancerCollecte,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(vertical: 14.0),
               ),
               child: const Text(
                 'Lancer la collecte',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
@@ -158,87 +156,6 @@ class _ProjectHeader extends StatelessWidget {
           icon: const Icon(Icons.more_horiz, color: Colors.grey),
         ),
       ],
-    );
-  }
-}
-
-class _ProjectStats extends StatelessWidget {
-  final Project project;
-
-  const _ProjectStats({required this.project});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            _ProjectButton(
-              icon: Icon(
-                Icons.healing_outlined,
-                color: Colors.grey[600],
-                size: 16.0,
-              ),
-              onTap: () {},
-            ),
-            _ProjectButton(
-              icon: Icon(
-                Icons.favorite_border,
-                color: Colors.grey[600],
-                size: 16.0,
-              ),
-              onTap: () {},
-            ),
-            _ProjectButton(
-              icon: Icon(
-                Icons.comment_outlined,
-                color: Colors.grey[600],
-                size: 16.0,
-              ),
-              onTap: () {},
-            ),
-            _ProjectButton(
-              icon: Icon(Icons.send, color: Colors.grey[600], size: 16.0),
-              onTap: () {},
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _ProjectButton extends StatelessWidget {
-  final Icon icon;
-  final VoidCallback onTap;
-  final countValue = 250;
-
-  const _ProjectButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Material(
-        color: Colors.white,
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            height: 25.0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                icon,
-                const SizedBox(width: 4.0),
-                Text(
-                  countValue.toString(),
-                  style: const TextStyle(fontSize: 12.0, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

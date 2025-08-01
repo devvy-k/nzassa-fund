@@ -1,3 +1,6 @@
+import 'package:crowfunding_project/core/domain/usecases/comments/add_comment_usecase.dart';
+import 'package:crowfunding_project/core/domain/usecases/comments/delete_comment_usecase.dart';
+import 'package:crowfunding_project/core/domain/usecases/comments/get_comment_usecase.dart';
 import 'package:crowfunding_project/core/domain/usecases/projects/create_project_usecase.dart';
 import 'package:crowfunding_project/core/domain/usecases/projects/toggle_like_project_usecase.dart';
 import 'package:crowfunding_project/services/auth_service.dart';
@@ -8,6 +11,7 @@ import 'package:crowfunding_project/core/domain/repositories/project_repository.
 import 'package:crowfunding_project/core/domain/usecases/projects/get_projects_usecase.dart';
 import 'package:crowfunding_project/navigation/base_controller.dart';
 import 'package:crowfunding_project/ui/features/collect_creation/collect_creation_viewmodel.dart';
+import 'package:crowfunding_project/ui/features/comments/comment_viewmodel.dart';
 import 'package:crowfunding_project/ui/features/projects/project_viewmodel.dart';
 import 'package:get/get.dart';
 
@@ -30,10 +34,27 @@ class ProjectsBindings extends Bindings {
     Get.lazyPut(() => GetProjectsUsecase(Get.find<ProjectRepository>()));
     Get.lazyPut(() => CreateProjectUseCase(Get.find<ProjectRepository>()));
     Get.lazyPut(() => ToggleLikeProjectUsecase(Get.find<ProjectRepository>()));
+    Get.lazyPut(() => AddCommentUsecase(Get.find<ProjectRepository>()));
+    Get.lazyPut(() => DeleteCommentUsecase(Get.find<ProjectRepository>()));
+    Get.lazyPut(() => GetCommentUsecase(Get.find<ProjectRepository>()));
 
     // ViewModel
-    Get.lazyPut(() => ProjectsViewmodel(Get.find<GetProjectsUsecase>(), Get.find<ToggleLikeProjectUsecase>()));
-    Get.lazyPut(() => CollectCreationViewmodel(Get.find<CreateProjectUseCase>()));
+    Get.lazyPut(
+      () => ProjectsViewmodel(
+        Get.find<GetProjectsUsecase>(),
+        Get.find<ToggleLikeProjectUsecase>(),
+      ),
+    );
+    Get.lazyPut(
+      () => CollectCreationViewmodel(Get.find<CreateProjectUseCase>()),
+    );
+    Get.lazyPut(
+      () => CommentViewmodel(
+        Get.find<GetCommentUsecase>(),
+        Get.find<AddCommentUsecase>(),
+        Get.find<DeleteCommentUsecase>()
+      ),
+    );
 
     // Controller
     Get.lazyPut(() => BaseController());

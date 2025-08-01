@@ -25,7 +25,7 @@ class CommentModel extends Comment {
       authorAvatar: data['authorAvatar'] ?? '',
       createdAt: timestamp.toDate(),
       likes: List<String>.from(data['likes'] ?? []),
-      parentCommentId: data['parentCommentId'] as String?,
+      parentCommentId: data['parentCommentId'] ?? '',
     );
   }
 

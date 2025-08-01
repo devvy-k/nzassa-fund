@@ -10,13 +10,13 @@ import 'package:crowfunding_project/core/domain/usecases/comments/get_comment_us
 import 'package:get/get.dart';
 
 class CommentViewmodel extends GetxController {
-  final GetCommentUsecase _getCommentUsecase;
-  final AddCommentUsecase _addCommentUsecase;
-  final DeleteCommentUsecase _deleteCommentUsecase;
+  final GetCommentUsecase getCommentUsecase;
+  final AddCommentUsecase addCommentUsecase;
+  final DeleteCommentUsecase deleteCommentUsecase;
   CommentViewmodel(
-    this._getCommentUsecase,
-    this._addCommentUsecase,
-    this._deleteCommentUsecase,
+    this.getCommentUsecase,
+    this.addCommentUsecase,
+    this.deleteCommentUsecase,
   );
 
   final RxList<CommentModel> comments = <CommentModel>[].obs;
@@ -26,14 +26,20 @@ class CommentViewmodel extends GetxController {
   final Rx<UiState<List<CommentModel>>?> commentsState = Rx<UiState<List<CommentModel>>?>(null);
   StreamSubscription<List<CommentModel>>? _commentsSubscription;
 
-  Future<void> fetchComments(String projectId, {String? parentCommentId}) async {
+
+  void fetchComments(String projectId, {String? parentCommentId}) {
     commentsState.value = UiStateLoading();
     try {
       _commentsSubscription?.cancel();
-      _commentsSubscription = _getCommentUsecase.call(projectId, parentCommentId: parentCommentId).listen(
+      _commentsSubscription = getCommentUsecase.call(projectId, parentCommentId: parentCommentId).listen(
         (commentList) {
-          comments.value = commentList;
+          console.log('[Viewmodel] Fetched ${commentList.length} comments for project $projectId');
           commentsState.value = UiStateSuccess(commentList);
+          if (parentCommentId == null) {
+            comments.assignAll(commentList);
+          } else {
+            replies.assignAll(commentList);
+          }
         },
         onError: (error) {
           commentsState.value = UiStateError('Failed to load comments: $error');
@@ -44,11 +50,11 @@ class CommentViewmodel extends GetxController {
     }
   }
 
-  Future<void> addComment(String projectId, String content, UserProfile user, {String? parentCommentId}) async {
+  Future<void> addComment(String projectId, UserProfile user, {String? parentCommentId}) async {
     if (newCommentContent.value.isEmpty) return;
 
     try {
-      await _addCommentUsecase.call(
+      await addCommentUsecase.call(
         projectId: projectId,
         content: newCommentContent.value,
         user: user,
@@ -63,7 +69,7 @@ class CommentViewmodel extends GetxController {
 
   Future<void> loadReplies(String projectId, String commentId) async {
     try {
-       _getCommentUsecase.call(projectId, parentCommentId: commentId)
+       getCommentUsecase.call(projectId, parentCommentId: commentId)
           .listen((fetchedReplies){
             replies.assignAll(fetchedReplies);
           });
@@ -74,7 +80,7 @@ class CommentViewmodel extends GetxController {
 
   Future<void> deleteComment(String projectId, String commentId) async {
     try {
-      await _deleteCommentUsecase.call(projectId, commentId);
+      await deleteCommentUsecase.call(projectId, commentId);
       comments.removeWhere((comment) => comment.id == commentId);
       replies.removeWhere((reply) => reply.id == commentId);
     } catch (e) {
