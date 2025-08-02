@@ -89,7 +89,7 @@ class CustomTheme {
     ),
     textTheme: const TextTheme(
       headlineLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-      bodyMedium: TextStyle(fontSize: 13, color: Colors.white70),
+      bodyMedium: TextStyle(fontSize: 13, color: Colors.white),
       labelLarge: TextStyle(fontWeight: FontWeight.w600),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(

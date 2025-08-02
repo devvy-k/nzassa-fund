@@ -7,19 +7,19 @@ class Constants {
       Tab(
         icon: Icon(
           index == 0 ? Icons.business : Icons.business_outlined,
-          color: Colors.blue,
+          color: Colors.white,
         ),
       ),
       Tab(
         icon: Icon(
           index == 1 ? Icons.favorite : Icons.favorite_outline,
-          color: Colors.blue,
+          color: Colors.white,
         ),
       ),
       Tab(
         icon: Icon(
           index == 2 ? Icons.check_circle : Icons.check_circle_outline,
-          color: Colors.blue,
+          color: Colors.white,
         ),
       ),
     ];
@@ -48,5 +48,35 @@ class Constants {
       'background': 'assets/images/onboarding3.jpg',
     },
   ];
+
+  static customShowDialog(BuildContext context, String title, String content, {required Function validateAction, required Function cancelAction, required bool canDismiss} ) {
+    showDialog(
+      context: context,
+      barrierDismissible: canDismiss,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          content: Text(content),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.grey,
+              ),
+              onPressed: () {
+                cancelAction();
+              },
+              child: Text('Annuler'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                validateAction();
+              },
+              child: Text('Confirmer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
   

@@ -103,6 +103,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                                 leading: ProfileAvatar(
                                   userProfileImageUrl:
                                       'https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+                                  userId: comment.authorId!,
                                 ),
                                 title: Text(
                                   comment.authorName,

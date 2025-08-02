@@ -82,9 +82,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 40),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
                           IconButton(
                             onPressed: () {
                               Navigator.of(context).pop();
@@ -94,19 +91,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               size: 20,
                             ),
                           ),
-                          // Sign Out Button : delete after testing
-                          IconButton(
-                            onPressed: () {
-                            _authViewmodel.signOutUsecase;
-                            },
-                            icon: const Icon(
-                              Icons.close,
-                              color: Colors.red,
-                              size: 20,
-                            ),
-                          ),
-                        ],
-                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: const Text(

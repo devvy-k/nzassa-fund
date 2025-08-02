@@ -20,23 +20,23 @@ class ProjectsBindings extends Bindings {
   void dependencies() {
     Get.lazyPut(() => AuthService(), fenix: true);
     // Shared service
-    Get.lazyPut(() => FirestroreService());
+    Get.lazyPut(() => FirestroreService(), fenix: true);
 
     // Data source
-    Get.lazyPut(() => ProjectsRemoteDatasource(Get.find<FirestroreService>()));
+    Get.lazyPut(() => ProjectsRemoteDatasource(Get.find<FirestroreService>()), fenix: true);
 
     // Repository implementation
     Get.lazyPut<ProjectRepository>(
-      () => ProjectRepositoryImpl(Get.find<ProjectsRemoteDatasource>()),
+      () => ProjectRepositoryImpl(Get.find<ProjectsRemoteDatasource>()), fenix: true,
     );
 
     // Use case
     Get.lazyPut(() => GetProjectsUsecase(Get.find<ProjectRepository>()));
-    Get.lazyPut(() => CreateProjectUseCase(Get.find<ProjectRepository>()));
+    Get.lazyPut(() => CreateProjectUseCase(Get.find<ProjectRepository>()), fenix: true);
     Get.lazyPut(() => ToggleLikeProjectUsecase(Get.find<ProjectRepository>()));
-    Get.lazyPut(() => AddCommentUsecase(Get.find<ProjectRepository>()));
-    Get.lazyPut(() => DeleteCommentUsecase(Get.find<ProjectRepository>()));
-    Get.lazyPut(() => GetCommentUsecase(Get.find<ProjectRepository>()));
+    Get.lazyPut(() => AddCommentUsecase(Get.find<ProjectRepository>()), fenix: true);
+    Get.lazyPut(() => DeleteCommentUsecase(Get.find<ProjectRepository>()), fenix: true);
+    Get.lazyPut(() => GetCommentUsecase(Get.find<ProjectRepository>()), fenix: true);
 
     // ViewModel
     Get.lazyPut(
@@ -46,7 +46,7 @@ class ProjectsBindings extends Bindings {
       ),
     );
     Get.lazyPut(
-      () => CollectCreationViewmodel(Get.find<CreateProjectUseCase>()),
+      () => CollectCreationViewmodel(Get.find<CreateProjectUseCase>()), fenix: true,
     );
     Get.lazyPut(
       () => CommentViewmodel(
@@ -54,6 +54,7 @@ class ProjectsBindings extends Bindings {
         Get.find<AddCommentUsecase>(),
         Get.find<DeleteCommentUsecase>()
       ),
+      fenix: true
     );
 
     // Controller

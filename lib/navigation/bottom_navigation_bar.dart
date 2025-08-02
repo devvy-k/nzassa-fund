@@ -16,18 +16,18 @@ class BottomNavBar extends StatelessWidget {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_filled),
-            selectedIcon: Icon(Icons.home, color: Colors.white),
-            label: 'Home',
+            selectedIcon: Icon(Icons.home),
+            label: 'Projets',
           ),
           NavigationDestination(
-            icon: Icon(Icons.healing_outlined),
-            selectedIcon: Icon(Icons.healing, color: Colors.white),
+            icon: Icon(Icons.volunteer_activism_outlined),
+            selectedIcon: Icon(Icons.volunteer_activism),
             label: 'Collecte',
           ),
           NavigationDestination(
             icon: Icon(Icons.search_outlined),
-            selectedIcon: Icon(Icons.search, color: Colors.white),
-            label: 'Search',
+            selectedIcon: Icon(Icons.search),
+            label: 'Recherche',
           ),
         ],
       )

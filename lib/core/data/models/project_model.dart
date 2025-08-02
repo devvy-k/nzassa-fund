@@ -60,6 +60,7 @@ class ProjectModel extends Project {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'title': title,
       'content': content,
       'author': author.toJson(),
       'images': images,
