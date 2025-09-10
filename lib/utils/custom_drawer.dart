@@ -40,7 +40,9 @@ class CustomDrawer extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.dashboard),
                 title: const Text('Tableau de bord'),
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed('/dashboard');
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.person),

@@ -23,7 +23,7 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            color: CustomTheme.bluePrimary,
+            color: CustomTheme.orangePrimary,
             child: 
                 Row(
                   children: [

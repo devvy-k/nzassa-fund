@@ -4,10 +4,10 @@ class CustomTheme {
   CustomTheme._();
 
   // Couleurs extraites du logo
-  static const Color bluePrimary = Color(0xFF154A88);
-  static const Color blueAccent = Color(0xFF2A74B5);
+  static const Color orangePrimary = Color(0xFFF5A623);
+  static const Color blueAccent = Color(0xFF154A88);
   static const Color green = Color(0xFF7AC943);
-  static const Color orange = Color(0xFFF5A623);
+  static const Color orange = Color.fromARGB(255, 244, 183, 86);
   static const Color yellow = Color(0xFFFEC932);
   static const Color red = Color(0xFFD84339);
 
@@ -20,10 +20,10 @@ class CustomTheme {
     useMaterial3: true,
     fontFamily: 'Poppins',
     brightness: Brightness.light,
-    primaryColor: bluePrimary,
+    primaryColor: orangePrimary,
     scaffoldBackgroundColor: lightBackground,
     colorScheme: ColorScheme.light(
-      primary: bluePrimary,
+      primary: orangePrimary,
       secondary: green,
       error: red,
       surface: Color(0xFFF5F5F5),
@@ -35,7 +35,7 @@ class CustomTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: bluePrimary,
+        backgroundColor: orangePrimary,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -44,13 +44,13 @@ class CustomTheme {
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: bluePrimary),
+        borderSide: BorderSide(color: orangePrimary),
         borderRadius: BorderRadius.circular(10),
       ),
     ),
     // AppBar
     appBarTheme: const AppBarTheme(
-      backgroundColor: bluePrimary,
+      backgroundColor: orangePrimary,
       foregroundColor: Colors.white,
       centerTitle: true,
       elevation: 2,
@@ -67,7 +67,7 @@ class CustomTheme {
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return bluePrimary;
+          return orangePrimary;
         }
         return Colors.grey;
       }),
@@ -79,10 +79,10 @@ class CustomTheme {
     useMaterial3: true,
     fontFamily: 'Poppins',
     brightness: Brightness.dark,
-    primaryColor: bluePrimary,
+    primaryColor: orangePrimary,
     scaffoldBackgroundColor: darkBackground,
     colorScheme: ColorScheme.dark(
-      primary: bluePrimary,
+      primary: orangePrimary,
       secondary: green,
       error: red,
       surface: darkSurface
@@ -94,7 +94,7 @@ class CustomTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: bluePrimary,
+        backgroundColor: orangePrimary,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -105,12 +105,12 @@ class CustomTheme {
       fillColor: darkSurface,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: bluePrimary),
+        borderSide: BorderSide(color: orangePrimary),
         borderRadius: BorderRadius.circular(10),
       ),
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: bluePrimary,
+      backgroundColor: orangePrimary,
       foregroundColor: Colors.white,
       centerTitle: true,
       elevation: 2,
@@ -125,7 +125,7 @@ class CustomTheme {
     checkboxTheme: CheckboxThemeData(
       fillColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {
-          return bluePrimary;
+          return orangePrimary;
         }
         return Colors.grey;
       }),

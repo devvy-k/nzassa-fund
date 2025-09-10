@@ -1,4 +1,6 @@
+import 'package:crowfunding_project/ui/features/projects/completed_project_screen.dart';
 import 'package:crowfunding_project/ui/features/projects/projects_screen.dart';
+import 'package:crowfunding_project/utils/under_development_screen.dart';
 import 'package:flutter/material.dart';
 
 class Constants {
@@ -27,8 +29,8 @@ class Constants {
 
   static List<Widget> screens = [
     ProjectsScreen(),
-    Center(child: Text('Favorites')),
-    Center(child: Text('Completed')),
+    UnderDevelopmentScreen(),
+    CompletedProjectScreen(),
   ];
 
   static List<Map<String, String>> onbardScreen = [
